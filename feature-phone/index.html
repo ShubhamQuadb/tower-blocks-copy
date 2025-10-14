@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Space Battle - KaiOS</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=240,height=320,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="./images/logo/favicon.ico" />
+    <link rel="stylesheet" href="css/main.css" />
+    <style>
+        /* KaiOS Optimizations - Perfect 240x320 Fit, Centered */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        header#top {
+            display: none !important;
+            pointer-events: none !important;
+        }
+        
+        /* Disable all links to prevent navigation */
+        a {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+        
+        #gameSection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            display: block;
+            margin: 0;
+            padding: 0;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        h1.error {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header id="top">
+        <div id="logo"></div>
+        <nav id="buttons">
+            <ul>
+                <li><a href="index.html" title="Main Page">Game</a></li>
+                <li><a href="about.html" title="About Page">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="gameSection">
+        <canvas id="gameCanvas"></canvas>
+        <h1 class="error">Your browser does not support Canvas. Please upgrade your browser.</h1>
+    </section>
+
+    <!-- JioGames SDK -->
+    <script src="jiogames_sdk.js"></script>
+    
+    <!-- Global Promise Error Handler (suppress sound errors) -->
+    <script>
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && 
+                (event.reason.name === 'NotAllowedError' || 
+                 event.reason.name === 'AbortError')) {
+                // Suppress sound autoplay errors (expected in browser testing)
+                event.preventDefault();
+                console.log('[Suppressed] Sound autoplay blocked by browser (normal behavior)');
+            }
+        });
+    </script>
+    
+    <!-- Game Scripts -->
+    <script src="js/require.js" data-main="js/main"></script>
+
+    <!-- KaiOS Controls -->
+    <script>
+        (function() {
+            console.log("=== KaiOS Controls Initialized ===");
+            
+            // Key mapping for D-Pad and numpad (REVERSED: 2=UP, 8=DOWN)
+            var keyMap = {
+                50: 38,   // 2 -> UP (reversed for KaiOS)
+                56: 40,   // 8 -> DOWN (reversed for KaiOS)
+                52: 37,   // 4 -> LEFT
+                54: 39,   // 6 -> RIGHT
+                53: 32    // 5 -> SPACEBAR (for start/shoot)
+            };
+
+            function handleKeyDown(e) {
+                var keyCode = e.keyCode || e.which;
+                console.log("Key DOWN:", keyCode);
+                
+                // Handle arrow key mappings (including 5 button)
+                if (keyMap[keyCode]) {
+                    var mappedCode = keyMap[keyCode];
+                    console.log("Mapping", keyCode, "->", mappedCode);
+                    fireKey(mappedCode);
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+            
+            function handleKeyUp(e) {
+                var keyCode = e.keyCode || e.which;
+                
+                // Fire keyup event for spacebar (5 button)
+                if (keyCode === 53) {
+                    fireKeyUp(32);
+                }
+            }
+
+            function fireKey(code) {
+                console.log("Firing keydown event:", code);
+                try {
+                    var ev = new KeyboardEvent('keydown', {
+                        bubbles: true,
+                        cancelable: true,
+                        keyCode: code,
+                        which: code
+                    });
+                    document.dispatchEvent(ev);
+                    console.log("Keydown event dispatched successfully");
+                } catch (e) {
+                    console.log("Using fallback keydown method");
+                    var ev = document.createEvent('Event');
+                    ev.initEvent('keydown', true, true);
+                    ev.keyCode = code;
+                    ev.which = code;
+                    document.dispatchEvent(ev);
+                }
+            }
+
+            function fireKeyUp(code) {
+                console.log("Firing keyup event:", code);
+                try {
+                    var ev = new KeyboardEvent('keyup', {
+                        bubbles: true,
+                        cancelable: true,
+                        keyCode: code,
+                        which: code
+                    });
+                    document.dispatchEvent(ev);
+                    console.log("Keyup event dispatched successfully");
+                } catch (e) {
+                    console.log("Using fallback keyup method");
+                    var ev = document.createEvent('Event');
+                    ev.initEvent('keyup', true, true);
+                    ev.keyCode = code;
+                    ev.which = code;
+                    document.dispatchEvent(ev);
+                }
+            }
+
+            document.addEventListener('keydown', handleKeyDown, true);
+            document.addEventListener('keyup', handleKeyUp, true);
+
+            // Prevent scrolling
+            window.addEventListener('keydown', function(e) {
+                if([37, 38, 39, 40, 32].indexOf(e.keyCode) > -1) {
+                    e.preventDefault();
+                }
+            }, false);
+            
+            console.log("=== KaiOS Controls Ready ===");
+            console.log("Controls: 2=UP, 8=DOWN, 4=LEFT, 6=RIGHT, 5/OK=START/SHOOT");
+            
+            // Check SDK initialization
+            setTimeout(function() {
+                if (typeof JioGames !== 'undefined') {
+                    console.log("✓ JioGames SDK is LOADED");
+                    console.log("SDK Functions:", Object.keys(JioGames));
+                } else {
+                    console.log("✗ JioGames SDK not found");
+                }
+            }, 1000);
+        })();
+    </script>
+</body>
+</html>
