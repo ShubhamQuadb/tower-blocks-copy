@@ -62,15 +62,490 @@
         header#top {
             display: none;
         }
+        
+        /* Modern HTML/CSS Menu UI */
+        #menuOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        #menuOverlay.hidden {
+            display: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .menu-container {
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(145deg, rgba(10, 25, 47, 0.95), rgba(15, 35, 70, 0.95));
+            border: 3px solid rgba(0, 180, 255, 0.8);
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 0 40px rgba(0, 150, 255, 0.5);
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .menu-title {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            color: #FFD700;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 200, 0, 0.8);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .menu-subtitle {
+            font-size: clamp(0.7rem, 3vw, 1rem);
+            color: rgba(200, 220, 255, 0.9);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-btn {
+            background: linear-gradient(145deg, rgba(30, 50, 80, 0.6), rgba(20, 35, 60, 0.6));
+            border: 2px solid rgba(100, 150, 200, 0.5);
+            color: rgba(200, 220, 255, 0.9);
+            padding: 15px 20px;
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .menu-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .menu-btn.start {
+            border-color: #00ff88;
+        }
+        
+        .menu-btn.start:hover, .menu-btn.start:active {
+            background: linear-gradient(145deg, #00ff88, rgba(0, 0, 0, 0.3));
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            color: #fff;
+        }
+        
+        .menu-btn.options {
+            border-color: #ffaa00;
+        }
+        
+        .menu-btn.options:hover, .menu-btn.options:active {
+            background: linear-gradient(145deg, #ffaa00, rgba(0, 0, 0, 0.3));
+            border-color: #ffaa00;
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.6);
+            color: #fff;
+        }
+        
+        .menu-btn.stats {
+            border-color: #00aaff;
+        }
+        
+        .menu-btn.stats:hover, .menu-btn.stats:active {
+            background: linear-gradient(145deg, #00aaff, rgba(0, 0, 0, 0.3));
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
+            color: #fff;
+        }
+        
+        .menu-btn.help {
+            border-color: #ff00ff;
+        }
+        
+        .menu-btn.help:hover, .menu-btn.help:active {
+            background: linear-gradient(145deg, #ff00ff, rgba(0, 0, 0, 0.3));
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+            color: #fff;
+        }
+        
+        .menu-btn.back {
+            border-color: #00aaff;
+            background: linear-gradient(145deg, rgba(0, 100, 180, 0.4), rgba(0, 70, 130, 0.4));
+        }
+        
+        .menu-btn.back:hover, .menu-btn.back:active {
+            background: linear-gradient(145deg, #00aaff, rgba(0, 0, 0, 0.3));
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
+            color: #fff;
+        }
+        
+        .menu-footer {
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+            color: rgba(150, 170, 200, 0.7);
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        /* Options specific styles */
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(20, 35, 60, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+        }
+        
+        .option-label {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: rgba(200, 220, 255, 0.9);
+            font-weight: bold;
+        }
+        
+        .toggle-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .toggle-btn.on {
+            background: #44ff44;
+            border-color: #44ff44;
+            color: #000;
+        }
+        
+        .toggle-btn.off {
+            background: #ff4444;
+            border-color: #ff4444;
+            color: #fff;
+        }
+        
+        .toggle-btn:active {
+            transform: scale(0.9);
+        }
+        
+        /* Stats styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(20, 35, 60, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 150, 200, 0.3);
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            color: rgba(150, 170, 200, 0.9);
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: clamp(1.2rem, 5vw, 1.8rem);
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        
+        .highscore-banner {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            border: 2px solid #FFD700;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .highscore-banner .stat-value {
+            color: #FFD700;
+            font-size: clamp(1.5rem, 6vw, 2.2rem);
+        }
     </style>
 </head>
 
 <body>
+    <!-- HTML/CSS Menu Overlay -->
+    <div id="menuOverlay">
+        <div class="menu-container" id="menuContainer">
+            <!-- Main Menu will be dynamically loaded here -->
+        </div>
+    </div>
+    
     <section id="gameSection">
         <canvas id="gameCanvas" width="1000" height="500">
         </canvas>
         <h1 class="error">Your browser does not support Canvas. Please upgrade your browser.</h1>
     </section>
+    
+    <script>
+        // HTML/CSS Menu System for better Android compatibility
+        const MenuUI = {
+            overlay: null,
+            container: null,
+            currentScreen: 'main',
+            
+            init: function() {
+                this.overlay = document.getElementById('menuOverlay');
+                this.container = document.getElementById('menuContainer');
+                this.showMainMenu();
+            },
+            
+            hide: function() {
+                if (this.overlay) {
+                    this.overlay.classList.add('hidden');
+                }
+            },
+            
+            show: function() {
+                if (this.overlay) {
+                    this.overlay.classList.remove('hidden');
+                }
+            },
+            
+            showMainMenu: function() {
+                this.currentScreen = 'main';
+                this.container.innerHTML = `
+                    <h1 class="menu-title">SPACE BATTLE</h1>
+                    <p class="menu-subtitle">THE ULTIMATE SPACE COMBAT EXPERIENCE</p>
+                    <div class="menu-buttons">
+                        <button class="menu-btn start" onclick="MenuUI.startGame()">Start Game</button>
+                        <button class="menu-btn options" onclick="MenuUI.showOptions()">Options</button>
+                        <button class="menu-btn stats" onclick="MenuUI.showStats()">Statistics</button>
+                        <button class="menu-btn help" onclick="MenuUI.showHelp()">Help</button>
+                    </div>
+                    <p class="menu-footer">Tap to select | ESC to exit</p>
+                `;
+                this.show();
+            },
+            
+            showOptions: function() {
+                this.currentScreen = 'options';
+                const musicState = localStorage.getItem('muteMusic') === 'true' ? 'off' : 'on';
+                const sfxState = localStorage.getItem('muteSFX') === 'true' ? 'off' : 'on';
+                
+                this.container.innerHTML = `
+                    <h1 class="menu-title" style="color: #ffaa00;">OPTIONS</h1>
+                    <div class="options-container">
+                        <div class="option-row">
+                            <span class="option-label">Music</span>
+                            <button class="toggle-btn ${musicState}" onclick="MenuUI.toggleMusic(this)">
+                                ${musicState.toUpperCase()}
+                            </button>
+                        </div>
+                        <div class="option-row">
+                            <span class="option-label">Sound FX</span>
+                            <button class="toggle-btn ${sfxState}" onclick="MenuUI.toggleSFX(this)">
+                                ${sfxState.toUpperCase()}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                    </div>
+                `;
+            },
+            
+            showStats: function() {
+                this.currentScreen = 'stats';
+                const highscore = localStorage.getItem('highscore') || '0';
+                const scout = localStorage.getItem('scout') || '0';
+                const fighter = localStorage.getItem('fighter') || '0';
+                const interceptor = localStorage.getItem('interceptor') || '0';
+                const tank = localStorage.getItem('tank') || '0';
+                const transport = localStorage.getItem('transport') || '0';
+                
+                this.container.innerHTML = `
+                    <h1 class="menu-title" style="color: #00aaff;">STATISTICS</h1>
+                    <div class="highscore-banner">
+                        <div class="stat-label">★ HIGH SCORE ★</div>
+                        <div class="stat-value">${highscore}</div>
+                    </div>
+                    <div class="stat-item" style="margin-bottom: 15px;">
+                        <div class="stat-label">ENEMIES KILLED</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">Scout</div>
+                            <div class="stat-value">${scout}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Fighter</div>
+                            <div class="stat-value">${fighter}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Interceptor</div>
+                            <div class="stat-value">${interceptor}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Tank</div>
+                            <div class="stat-value">${tank}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Transport</div>
+                            <div class="stat-value">${transport}</div>
+                        </div>
+                        <div class="stat-item" style="grid-column: 1 / -1;">
+                            <button class="menu-btn" onclick="MenuUI.resetStats()" style="width: 100%; margin: 0;">Reset Stats</button>
+                        </div>
+                    </div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                    </div>
+                `;
+            },
+            
+            showHelp: function() {
+                this.currentScreen = 'help';
+                this.container.innerHTML = `
+                    <h1 class="menu-title" style="color: #ff00ff;">HELP</h1>
+                    <div style="color: rgba(200, 220, 255, 0.9); font-size: clamp(0.9rem, 3.5vw, 1.1rem); line-height: 1.6; margin-bottom: 20px;">
+                        <p style="margin-bottom: 15px;"><strong style="color: #FFD700;">Controls:</strong></p>
+                        <p style="margin-bottom: 10px;">• Arrow Keys - Move ship</p>
+                        <p style="margin-bottom: 10px;">• Spacebar - Fire weapon</p>
+                        <p style="margin-bottom: 10px;">• P - Pause game</p>
+                        <p style="margin-bottom: 10px;">• M - Mute music</p>
+                        <p style="margin-bottom: 10px;">• S - Mute SFX</p>
+                        <p style="margin-bottom: 15px; margin-top: 15px;"><strong style="color: #FFD700;">Objective:</strong></p>
+                        <p style="margin-bottom: 10px;">Destroy all enemy ships and survive!</p>
+                        <p style="margin-bottom: 10px;">Collect power-ups to upgrade your weapons.</p>
+                    </div>
+                    <div class="menu-buttons">
+                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                    </div>
+                `;
+            },
+            
+            toggleMusic: function(btn) {
+                const currentState = btn.classList.contains('on');
+                if (currentState) {
+                    btn.classList.remove('on');
+                    btn.classList.add('off');
+                    btn.textContent = 'OFF';
+                    localStorage.setItem('muteMusic', 'true');
+                } else {
+                    btn.classList.remove('off');
+                    btn.classList.add('on');
+                    btn.textContent = 'ON';
+                    localStorage.setItem('muteMusic', 'false');
+                }
+                // Trigger game's music toggle if available
+                if (window.Game && window.Game.muteMusic !== undefined) {
+                    window.Game.muteMusic = !currentState;
+                }
+            },
+            
+            toggleSFX: function(btn) {
+                const currentState = btn.classList.contains('on');
+                if (currentState) {
+                    btn.classList.remove('on');
+                    btn.classList.add('off');
+                    btn.textContent = 'OFF';
+                    localStorage.setItem('muteSFX', 'true');
+                } else {
+                    btn.classList.remove('off');
+                    btn.classList.add('on');
+                    btn.textContent = 'ON';
+                    localStorage.setItem('muteSFX', 'false');
+                }
+                // Trigger game's SFX toggle if available
+                if (window.Game && window.Game.muteSFX !== undefined) {
+                    window.Game.muteSFX = !currentState;
+                }
+            },
+            
+            resetStats: function() {
+                if (confirm('Are you sure you want to reset all statistics?')) {
+                    localStorage.setItem('scout', '0');
+                    localStorage.setItem('fighter', '0');
+                    localStorage.setItem('interceptor', '0');
+                    localStorage.setItem('tank', '0');
+                    localStorage.setItem('transport', '0');
+                    this.showStats();
+                }
+            },
+            
+            startGame: function() {
+                this.hide();
+                // Trigger game start through canvas click simulation or direct function call
+                if (window.Game && window.Game.screen === 'main_menu') {
+                    // Simulate click on start button area
+                    const canvas = document.getElementById('gameCanvas');
+                    const rect = canvas.getBoundingClientRect();
+                    const clickX = rect.width * 0.375; // Approximate start button position
+                    const clickY = rect.height * 0.5;
+                    
+                    const clickEvent = new MouseEvent('click', {
+                        clientX: rect.left + clickX,
+                        clientY: rect.top + clickY,
+                        bubbles: true
+                    });
+                    canvas.dispatchEvent(clickEvent);
+                }
+            }
+        };
+        
+        // Initialize menu on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            MenuUI.init();
+        });
+        
+        // Handle ESC key
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (MenuUI.currentScreen !== 'main') {
+                    MenuUI.showMainMenu();
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
