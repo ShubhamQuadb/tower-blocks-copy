@@ -47,15 +47,7 @@
         }
         
         h1.error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            text-align: center;
-            font-size: 1.5rem;
-            padding: 20px;
-            z-index: 10;
+            display: none; /* hide fallback text so it doesn't overlay menu */
         }
         
         /* Hide old header for fullscreen experience */
@@ -358,10 +350,10 @@
                     <h1 class="menu-title">SPACE BATTLE</h1>
                     <p class="menu-subtitle">THE ULTIMATE SPACE COMBAT EXPERIENCE</p>
                     <div class="menu-buttons">
-                        <button class="menu-btn start" onclick="MenuUI.startGame()">Start Game</button>
-                        <button class="menu-btn options" onclick="MenuUI.showOptions()">Options</button>
-                        <button class="menu-btn stats" onclick="MenuUI.showStats()">Statistics</button>
-                        <button class="menu-btn help" onclick="MenuUI.showHelp()">Help</button>
+                        <button type="button" class="menu-btn start" onclick="event.preventDefault(); MenuUI.startGame(); return false;">Start Game</button>
+                        <button type="button" class="menu-btn options" onclick="event.preventDefault(); MenuUI.showOptions(); return false;">Options</button>
+                        <button type="button" class="menu-btn stats" onclick="event.preventDefault(); MenuUI.showStats(); return false;">Statistics</button>
+                        <button type="button" class="menu-btn help" onclick="event.preventDefault(); MenuUI.showHelp(); return false;">Help</button>
                     </div>
                     <p class="menu-footer">Tap to select | ESC to exit</p>
                 `;
@@ -378,19 +370,19 @@
                     <div class="options-container">
                         <div class="option-row">
                             <span class="option-label">Music</span>
-                            <button class="toggle-btn ${musicState}" onclick="MenuUI.toggleMusic(this)">
+                            <button type="button" class="toggle-btn ${musicState}" onclick="event.preventDefault(); MenuUI.toggleMusic(this); return false;">
                                 ${musicState.toUpperCase()}
                             </button>
                         </div>
                         <div class="option-row">
                             <span class="option-label">Sound FX</span>
-                            <button class="toggle-btn ${sfxState}" onclick="MenuUI.toggleSFX(this)">
+                            <button type="button" class="toggle-btn ${sfxState}" onclick="event.preventDefault(); MenuUI.toggleSFX(this); return false;">
                                 ${sfxState.toUpperCase()}
                             </button>
                         </div>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -435,11 +427,11 @@
                             <div class="stat-value">${transport}</div>
                         </div>
                         <div class="stat-item" style="grid-column: 1 / -1;">
-                            <button class="menu-btn" onclick="MenuUI.resetStats()" style="width: 100%; margin: 0;">Reset Stats</button>
+                            <button type="button" class="menu-btn" onclick="event.preventDefault(); MenuUI.resetStats(); return false;" style="width: 100%; margin: 0;">Reset Stats</button>
                         </div>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -460,7 +452,7 @@
                         <p style="margin-bottom: 10px;">Collect power-ups to upgrade your weapons.</p>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -536,17 +528,24 @@
                         const btnCenterX = part1 * 1.2 + (part1 * 0.75) / 2;
                         const btnCenterY = part2 + (part2 * 0.7) / 2;
                         
-                        // Create mouse event with correct coordinates
-                        const mouseEvent = new MouseEvent('click', {
-                            view: window,
-                            bubbles: true,
-                            cancelable: true,
-                            clientX: canvas.offsetLeft + btnCenterX,
-                            clientY: canvas.offsetTop + btnCenterY
-                        });
-                        
-                        // Dispatch click event
-                        canvas.dispatchEvent(mouseEvent);
+            // Convert canvas coords -> page coords with rect scaling
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height;
+
+            const pageX = rect.left + window.scrollX + btnCenterX * scaleX;
+            const pageY = rect.top + window.scrollY + btnCenterY * scaleY;
+
+            // Dispatch proper mouse sequence (move, down, up, click)
+            const moveEvent = new MouseEvent('mousemove', {bubbles:true, clientX: pageX, clientY: pageY});
+            const downEvent = new MouseEvent('mousedown', {bubbles:true, clientX: pageX, clientY: pageY});
+            const upEvent   = new MouseEvent('mouseup',   {bubbles:true, clientX: pageX, clientY: pageY});
+            const clickEvent= new MouseEvent('click',     {bubbles:true, clientX: pageX, clientY: pageY});
+
+            canvas.dispatchEvent(moveEvent);
+            canvas.dispatchEvent(downEvent);
+            canvas.dispatchEvent(upEvent);
+            canvas.dispatchEvent(clickEvent);
                         
                         console.log('Start game click dispatched at:', btnCenterX, btnCenterY);
                     } catch (error) {
