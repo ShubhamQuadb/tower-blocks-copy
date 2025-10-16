@@ -514,37 +514,60 @@
             
             startGame: function() {
                 this.hide();
-                // Trigger game start through canvas click simulation or direct function call
-                if (window.Game && window.Game.screen === 'main_menu') {
-                    // Simulate click on start button area
+                // Wait for game to load then simulate click
+                setTimeout(() => {
                     const canvas = document.getElementById('gameCanvas');
-                    const rect = canvas.getBoundingClientRect();
-                    const clickX = rect.width * 0.375; // Approximate start button position
-                    const clickY = rect.height * 0.5;
+                    if (!canvas) return;
                     
+                    // Get canvas dimensions
+                    const rect = canvas.getBoundingClientRect();
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+                    
+                    // Calculate start button position (matching draw.js button positions)
+                    const part1 = canvasWidth / 4;
+                    const part2 = canvasHeight / 4;
+                    const btnX = part1 * 1.2 + (part1 * 0.75) / 2; // Center of start button
+                    const btnY = part2 + (part2 * 0.7) / 2;
+                    
+                    // Create and dispatch click event
                     const clickEvent = new MouseEvent('click', {
-                        clientX: rect.left + clickX,
-                        clientY: rect.top + clickY,
-                        bubbles: true
+                        clientX: rect.left + (btnX * rect.width / canvasWidth),
+                        clientY: rect.top + (btnY * rect.height / canvasHeight),
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
                     });
                     canvas.dispatchEvent(clickEvent);
-                }
+                }, 100);
             }
         };
         
-        // Initialize menu on page load
+        // Initialize menu after canvas game loads
         window.addEventListener('DOMContentLoaded', function() {
-            MenuUI.init();
+            // Wait for canvas and game to initialize
+            setTimeout(() => {
+                MenuUI.init();
+            }, 500);
         });
         
-        // Handle ESC key
+        // Handle ESC key to show menu
         window.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                if (MenuUI.currentScreen !== 'main') {
+                if (MenuUI.overlay && MenuUI.overlay.classList.contains('hidden')) {
+                    // Show menu if hidden (during game)
+                    MenuUI.showMainMenu();
+                } else if (MenuUI.currentScreen !== 'main') {
+                    // Navigate back to main menu if in submenu
                     MenuUI.showMainMenu();
                 }
+                e.preventDefault();
+                e.stopPropagation();
             }
         });
+        
+        // Add global access to MenuUI for game integration
+        window.MenuUI = MenuUI;
     </script>
 </body>
 
