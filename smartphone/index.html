@@ -70,17 +70,19 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             animation: fadeIn 0.5s ease-in;
+            pointer-events: auto;
         }
         
         #menuOverlay.hidden {
             display: none;
+            pointer-events: none;
         }
         
         @keyframes fadeIn {
@@ -514,41 +516,59 @@
             
             startGame: function() {
                 this.hide();
-                // Wait for game to load then simulate click
+                
+                // Directly trigger game start by simulating canvas click
                 setTimeout(() => {
-                    const canvas = document.getElementById('gameCanvas');
-                    if (!canvas) return;
-                    
-                    // Get canvas dimensions
-                    const rect = canvas.getBoundingClientRect();
-                    const canvasWidth = canvas.width;
-                    const canvasHeight = canvas.height;
-                    
-                    // Calculate start button position (matching draw.js button positions)
-                    const part1 = canvasWidth / 4;
-                    const part2 = canvasHeight / 4;
-                    const btnX = part1 * 1.2 + (part1 * 0.75) / 2; // Center of start button
-                    const btnY = part2 + (part2 * 0.7) / 2;
-                    
-                    // Create and dispatch click event
-                    const clickEvent = new MouseEvent('click', {
-                        clientX: rect.left + (btnX * rect.width / canvasWidth),
-                        clientY: rect.top + (btnY * rect.height / canvasHeight),
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                    });
-                    canvas.dispatchEvent(clickEvent);
-                }, 100);
+                    try {
+                        const canvas = document.getElementById('gameCanvas');
+                        if (!canvas) {
+                            console.error('Canvas not found');
+                            return;
+                        }
+                        
+                        // Get canvas actual dimensions
+                        const canvasWidth = canvas.width;
+                        const canvasHeight = canvas.height;
+                        
+                        // Calculate start button center position (from action.js logic)
+                        const part1 = canvasWidth / 4;
+                        const part2 = canvasHeight / 4;
+                        const btnCenterX = part1 * 1.2 + (part1 * 0.75) / 2;
+                        const btnCenterY = part2 + (part2 * 0.7) / 2;
+                        
+                        // Create mouse event with correct coordinates
+                        const mouseEvent = new MouseEvent('click', {
+                            view: window,
+                            bubbles: true,
+                            cancelable: true,
+                            clientX: canvas.offsetLeft + btnCenterX,
+                            clientY: canvas.offsetTop + btnCenterY
+                        });
+                        
+                        // Dispatch click event
+                        canvas.dispatchEvent(mouseEvent);
+                        
+                        console.log('Start game click dispatched at:', btnCenterX, btnCenterY);
+                    } catch (error) {
+                        console.error('Error starting game:', error);
+                    }
+                }, 200);
             }
         };
         
         // Initialize menu after canvas game loads
-        window.addEventListener('DOMContentLoaded', function() {
-            // Wait for canvas and game to initialize
+        window.addEventListener('load', function() {
+            // Wait for game engine to fully initialize
             setTimeout(() => {
-                MenuUI.init();
-            }, 500);
+                // Check if game canvas is ready
+                const canvas = document.getElementById('gameCanvas');
+                if (canvas && canvas.getContext) {
+                    console.log('Canvas ready, showing menu');
+                    MenuUI.init();
+                } else {
+                    console.error('Canvas not ready');
+                }
+            }, 1000);
         });
         
         // Handle ESC key to show menu
