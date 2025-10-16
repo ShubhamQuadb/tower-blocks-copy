@@ -2,15 +2,35 @@
 /*This CSS file does not validate to W3 CSS3 due to vendor prefixes required to create gradients in CSS3,
 this causes parsing errors in the validator. The correct syntax has been used according to each browser
 vendor.*/
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+	overflow: hidden !important;
+	background: #000;
+	font-family: 'Arial', sans-serif;
+}
+
 body.info {
 	background-image: url("../images/menu/backdrop/stars.png");
 }
 
 h1.error {
-	position:absolute;
+	position: absolute;
 	top: 50%;
-	left: 100px;
-	z-index: -1;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #fff;
+	text-align: center;
+	font-size: 1.5rem;
+	padding: 20px;
+	z-index: 10;
 }
 
 header {
@@ -88,7 +108,29 @@ div#logo {
 }
 
 section#gameSection {
-  overflow: hidden;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a14 100%) !important;
+}
+
+#gameCanvas {
+  display: block !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 @font-face {
