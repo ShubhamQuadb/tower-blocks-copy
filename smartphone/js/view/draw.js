@@ -302,31 +302,37 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             var cw = Canvas.canvasWidth;
             var ch = Canvas.canvasHeight;
             
-            // Responsive sizing
-            var panelWidth = Math.min(cw * 0.35, 160);
-            var panelHeight = Math.min(ch * 0.06, 40);
-            var fontSize = Math.max(12, Math.min(cw / 40, 20));
-            var padding = Math.max(10, cw * 0.02);
+            // Responsive sizing - compact for top center
+            var panelWidth = Math.max(100, Math.min(cw * 0.25, 150));
+            var panelHeight = Math.max(28, Math.min(ch * 0.055, 38));
+            var fontSize = Math.max(10, Math.min(cw / 55, 14));
+            var margin = Math.max(5, cw * 0.01);
+            var gap = Math.max(10, cw * 0.02); // Increased gap
             
             ctx.save();
             
-            // Background panel (touching right/top edge)
-            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-            ctx.fillRect(cw - panelWidth, 0, panelWidth, panelHeight);
+            // Position: top center, right side of HP
+            var totalWidth = panelWidth * 2 + gap;
+            var startX = (cw - totalWidth) / 2;
+            var posX = startX + panelWidth + gap;
+            var posY = margin;
             
-            // Border
-            ctx.strokeStyle = "rgba(255, 215, 0, 0.8)";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(cw - panelWidth, 0, panelWidth, panelHeight);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            ctx.fillRect(posX, posY, panelWidth, panelHeight);
             
-            // Score text
+            // Border - thinner and more subtle
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.7)";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(posX, posY, panelWidth, panelHeight);
+            
+            // Score text - centered in panel
             ctx.font = "bold " + fontSize + "px Arial";
             ctx.fillStyle = "#FFD700";
-            ctx.textAlign = "right";
+            ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(255, 215, 0, 0.6)";
-            ctx.shadowBlur = 8;
-            ctx.fillText("SCORE: " + score, cw - panelWidth * 0.1, panelHeight / 2);
+            ctx.shadowColor = "rgba(255, 215, 0, 0.7)";
+            ctx.shadowBlur = 6;
+            ctx.fillText("SCORE: " + score, posX + panelWidth / 2, posY + panelHeight / 2);
             
             ctx.restore();
         };
@@ -338,21 +344,27 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             var cw = Canvas.canvasWidth;
             var ch = Canvas.canvasHeight;
             
-            // Responsive sizing
-            var panelWidth = Math.min(cw * 0.35, 160);
-            var panelHeight = Math.min(ch * 0.06, 40);
-            var padding = Math.max(10, cw * 0.02);
-            var barPadding = Math.max(5, cw * 0.01);
+            // Responsive sizing - compact for top center (matching score panel)
+            var panelWidth = Math.max(100, Math.min(cw * 0.25, 150));
+            var panelHeight = Math.max(28, Math.min(ch * 0.055, 38));
+            var barPadding = Math.max(3, cw * 0.006);
+            var margin = Math.max(5, cw * 0.01);
+            var gap = Math.max(10, cw * 0.02); // Increased gap to match Score
             
             ctx.save();
             
-            // Background panel (touching left/top edge)
-            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-            ctx.fillRect(0, 0, panelWidth, panelHeight);
+            // Position: top center, left side before Score
+            var totalWidth = panelWidth * 2 + gap;
+            var startX = (cw - totalWidth) / 2;
+            var posX = startX;
+            var posY = margin;
             
-            // Health bar dimensions
-            var barX = barPadding;
-            var barY = barPadding;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            ctx.fillRect(posX, posY, panelWidth, panelHeight);
+            
+            // Health bar dimensions (inside panel)
+            var barX = posX + barPadding;
+            var barY = posY + barPadding;
             var barWidth = panelWidth - barPadding * 2;
             var barHeight = panelHeight - barPadding * 2;
             
@@ -380,19 +392,19 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             ctx.fillStyle = gradient;
             ctx.fillRect(barX, barY, fillWidth, barHeight);
             
-            // Health bar border
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.lineWidth = 2;
+            // Health bar border - thinner like score panel
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+            ctx.lineWidth = 1.5;
             ctx.strokeRect(barX, barY, barWidth, barHeight);
             
-            // HP text - responsive font size
-            var fontSize = Math.max(10, Math.min(barHeight * 0.6, 14));
+            // HP text - responsive font size and centered
+            var fontSize = Math.max(9, Math.min(barHeight * 0.6, 13));
             ctx.font = "bold " + fontSize + "px Arial";
             ctx.fillStyle = "#fff";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-            ctx.shadowBlur = 4;
+            ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
+            ctx.shadowBlur = 3;
             ctx.fillText("HP: " + hp, barX + barWidth / 2, barY + barHeight / 2);
             
             ctx.restore();
