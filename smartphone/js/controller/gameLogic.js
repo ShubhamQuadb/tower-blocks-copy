@@ -17,7 +17,7 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
         timerInterval = setInterval(function () {
             if (Game.levelStarted) {
                 Game.timer += 0.01;
-                GameLogic.addScore(0.5); // Reduced from 2 to 0.5 for slower score increase
+                GameLogic.addScore(2);
             }
         }, 10);
     };
