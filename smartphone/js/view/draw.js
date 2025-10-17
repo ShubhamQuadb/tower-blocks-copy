@@ -1,16 +1,29 @@
 define(["model/images", "model/canvas", "model/game", "model/character", "controller/gameLogic", "model/inPlay", "controller/action"],
     function (Images, Canvas, Game, Character, GameLogic, InPlay, Action) {
         var drawStars = function drawStars() {
-            var i, size, x, y;
+            var i, size, x, y, alpha, ctx;
+            ctx = Canvas.context;
             for (i = 0; i < Game.stars.length; i += 1) {
                 if (Game.stars[i].x < 0) {
                     Game.stars[i] = Game.generateStar(true);
                 }
-                size = Game.stars[i].speed / 2;
+                size = Game.stars[i].speed * 0.8; // Bigger stars
                 x = Game.stars[i].x;
                 y = Game.stars[i].y;
-                Canvas.context.fillStyle = "rgba(255,255,255,0.5)";
-                Canvas.context.fillRect(x, y, size, size);
+                alpha = 0.3 + (Game.stars[i].speed / 8); // Variable brightness
+                
+                // Draw star with glow effect
+                ctx.save();
+                ctx.shadowColor = "rgba(200, 220, 255, " + alpha + ")";
+                ctx.shadowBlur = size * 2;
+                
+                // Draw bright core
+                ctx.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
                 Game.stars[i].x -= Game.stars[i].speed;
             }
         };
@@ -26,193 +39,53 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             drawStars();
         };
         var drawMainMenu = function drawMainMenu() {
-            var ctx = Canvas.context;
-            var cw = Canvas.canvasWidth;
-            var ch = Canvas.canvasHeight;
-            var mouseX = Game.mouse.pos.x;
-            var mouseY = Game.mouse.pos.y;
-            
-            // Modern gradient background panel
-            var panelWidth = cw * 0.5;
-            var panelHeight = ch * 0.7;
-            var panelX = (cw - panelWidth) / 2;
-            var panelY = (ch - panelHeight) / 2;
-            
-            // Semi-transparent panel with glow
-            ctx.shadowColor = "rgba(0, 150, 255, 0.5)";
-            ctx.shadowBlur = 30;
-            var gradient = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelHeight);
-            gradient.addColorStop(0, "rgba(10, 25, 47, 0.95)");
-            gradient.addColorStop(1, "rgba(15, 35, 70, 0.95)");
-            ctx.fillStyle = gradient;
-            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-            ctx.shadowBlur = 0;
-            
-            // Border glow
-            ctx.strokeStyle = "rgba(0, 180, 255, 0.8)";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-            
-            // Title: SPACE BATTLE
-            ctx.save();
-            ctx.shadowColor = "rgba(255, 200, 0, 0.8)";
-            ctx.shadowBlur = 20;
-            ctx.font = "bold " + Math.floor(cw / 15) + "px Arial";
-            ctx.fillStyle = "#FFD700";
-            ctx.textAlign = "center";
-            ctx.fillText("SPACE BATTLE", cw / 2, panelY + ch * 0.1);
-            ctx.restore();
-            
-            // Subtitle
-            ctx.font = Math.floor(cw / 45) + "px Arial";
-            ctx.fillStyle = "rgba(200, 220, 255, 0.9)";
-            ctx.textAlign = "center";
-            ctx.fillText("THE ULTIMATE SPACE COMBAT EXPERIENCE", cw / 2, panelY + ch * 0.15);
-            
-            // Button definitions
-            var buttonWidth = panelWidth * 0.7;
-            var buttonHeight = ch * 0.08;
-            var buttonX = cw / 2 - buttonWidth / 2;
-            var startY = panelY + ch * 0.25;
-            var buttonSpacing = ch * 0.12;
-            
-            var buttons = [
-                {label: "START GAME", y: startY, action: "start", color: "#00ff88"},
-                {label: "OPTIONS", y: startY + buttonSpacing, action: "options", color: "#ffaa00"},
-                {label: "STATISTICS", y: startY + buttonSpacing * 2, action: "stats", color: "#00aaff"},
-                {label: "HELP", y: startY + buttonSpacing * 3, action: "help", color: "#ff00ff"}
-            ];
-            
-            // Draw buttons
-            buttons.forEach(function(btn) {
-                var isHovered = mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                               mouseY >= btn.y && mouseY <= btn.y + buttonHeight;
-                
-                // Button background
-                if (isHovered) {
-                    ctx.shadowColor = btn.color;
-                    ctx.shadowBlur = 20;
-                    var btnGradient = ctx.createLinearGradient(buttonX, btn.y, buttonX, btn.y + buttonHeight);
-                    btnGradient.addColorStop(0, btn.color);
-                    btnGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
-                    ctx.fillStyle = btnGradient;
-                } else {
-                    ctx.fillStyle = "rgba(30, 50, 80, 0.6)";
-                }
-                
-                ctx.fillRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                ctx.shadowBlur = 0;
-                
-                // Button border
-                ctx.strokeStyle = isHovered ? btn.color : "rgba(100, 150, 200, 0.5)";
-                ctx.lineWidth = isHovered ? 3 : 2;
-                ctx.strokeRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                
-                // Button text
-                ctx.font = "bold " + Math.floor(cw / 35) + "px Arial";
-                ctx.fillStyle = isHovered ? "#fff" : "rgba(200, 220, 255, 0.9)";
-                ctx.textAlign = "center";
-                ctx.fillText(btn.label, cw / 2, btn.y + buttonHeight / 2 + buttonHeight * 0.12);
-            });
-            
-            // Footer text
-            ctx.font = Math.floor(cw / 60) + "px Arial";
-            ctx.fillStyle = "rgba(150, 170, 200, 0.7)";
-            ctx.textAlign = "center";
-            ctx.fillText("Click to select | ESC to exit", cw / 2, panelY + panelHeight - ch * 0.04);
+            // Legacy canvas main menu is disabled on smartphone.
+            // The HTML/CSS overlay (MenuUI) handles the main menu.
+            // Just draw background so the canvas doesn't show old UI.
+            Draw.drawBackground();
         };
 
         var drawOptions = function drawOptions() {
-            var ctx = Canvas.context;
-            var cw = Canvas.canvasWidth;
-            var ch = Canvas.canvasHeight;
+            var part1, part2, muteMusic, muteSFX, mainMenu;
+            part1 = Canvas.canvasWidth / 4;
+            part2 = Canvas.canvasHeight / 4;
             var mouseX = Game.mouse.pos.x;
             var mouseY = Game.mouse.pos.y;
-            
-            // Modern gradient background panel
-            var panelWidth = cw * 0.5;
-            var panelHeight = ch * 0.6;
-            var panelX = (cw - panelWidth) / 2;
-            var panelY = (ch - panelHeight) / 2;
-            
-            // Semi-transparent panel with glow
-            ctx.shadowColor = "rgba(255, 150, 0, 0.5)";
-            ctx.shadowBlur = 30;
-            var gradient = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelHeight);
-            gradient.addColorStop(0, "rgba(10, 25, 47, 0.95)");
-            gradient.addColorStop(1, "rgba(15, 35, 70, 0.95)");
-            ctx.fillStyle = gradient;
-            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-            ctx.shadowBlur = 0;
-            
-            // Border glow
-            ctx.strokeStyle = "rgba(255, 150, 0, 0.8)";
-            ctx.lineWidth = 3;
-            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-            
-            // Title: OPTIONS
-            ctx.save();
-            ctx.shadowColor = "rgba(255, 150, 0, 0.8)";
-            ctx.shadowBlur = 20;
-            ctx.font = "bold " + Math.floor(cw / 18) + "px Arial";
-            ctx.fillStyle = "#ffaa00";
-            ctx.textAlign = "center";
-            ctx.fillText("OPTIONS", cw / 2, panelY + ch * 0.1);
-            ctx.restore();
-            
-            // Toggle buttons
-            var buttonWidth = panelWidth * 0.7;
-            var buttonHeight = ch * 0.08;
-            var buttonX = cw / 2 - buttonWidth / 2;
-            var startY = panelY + ch * 0.18;
-            var buttonSpacing = ch * 0.11;
-            
-            var musicLabel = Game.muteMusic ? "MUSIC: OFF" : "MUSIC: ON";
-            var sfxLabel = Game.muteSFX ? "SFX: OFF" : "SFX: ON";
-            
-            var buttons = [
-                {label: musicLabel, y: startY, color: Game.muteMusic ? "#ff4444" : "#44ff44"},
-                {label: sfxLabel, y: startY + buttonSpacing, color: Game.muteSFX ? "#ff4444" : "#44ff44"},
-                {label: "BACK TO MENU", y: startY + buttonSpacing * 2.5, color: "#00aaff"}
-            ];
-            
-            // Draw buttons
-            buttons.forEach(function(btn) {
-                var isHovered = mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                               mouseY >= btn.y && mouseY <= btn.y + buttonHeight;
-                
-                // Button background
-                if (isHovered) {
-                    ctx.shadowColor = btn.color;
-                    ctx.shadowBlur = 20;
-                    var btnGradient = ctx.createLinearGradient(buttonX, btn.y, buttonX, btn.y + buttonHeight);
-                    btnGradient.addColorStop(0, btn.color);
-                    btnGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
-                    ctx.fillStyle = btnGradient;
-                } else {
-                    ctx.fillStyle = "rgba(30, 50, 80, 0.6)";
-                }
-                
-                ctx.fillRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                ctx.shadowBlur = 0;
-                
-                // Button border
-                ctx.strokeStyle = isHovered ? btn.color : "rgba(100, 150, 200, 0.5)";
-                ctx.lineWidth = isHovered ? 3 : 2;
-                ctx.strokeRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                
-                // Button text
-                ctx.font = "bold " + Math.floor(cw / 35) + "px Arial";
-                ctx.fillStyle = isHovered ? "#fff" : "rgba(200, 220, 255, 0.9)";
-                ctx.textAlign = "center";
-                ctx.fillText(btn.label, cw / 2, btn.y + buttonHeight / 2 + buttonHeight * 0.12);
-            });
+            //Button animation
+            if (Game.muteMusic) {
+                muteMusic = Images.muteMusic1;
+            } else {
+                muteMusic = Images.muteMusic0;
+            }
+            if (Game.muteSFX) {
+                muteSFX = Images.muteSFX1;
+            } else {
+                muteSFX = Images.muteSFX0;
+            }
+
+            if (mouseX >= part1 * 2.1 && mouseX <= part1 * 2.1 + part1 * 0.75 && mouseY >= part2 * 2 && mouseY <= part2 * 2 + part2 * 0.7) {
+                mainMenu = Images.mainMenu1;
+            } else {
+                mainMenu = Images.mainMenu0;
+            }
+            //drawing button
+            Canvas.context.drawImage(Images.blueMetal, part1, 0, part1 * 2, part2 * 3.5);
+            Canvas.context.drawImage(Images.bigLogo, part1 * 1.1, part2 * 0.1, part1 * 1.8, part2);
+            Canvas.context.drawImage(muteMusic, part1 * 1.2, part2, part1 * 0.75, part2 * 0.7);
+            Canvas.context.drawImage(muteSFX, part1 * 2.1, part2, part1 * 0.75, part2 * 0.7);
+            Canvas.context.drawImage(mainMenu, part1 * 2.1, part2 * 2, part1 * 0.75, part2 * 0.7);
         };
 
         var drawMenu = function drawMenu() {
+            // If HTML MenuUI is present, avoid drawing legacy menus
+            if (typeof window !== "undefined" && window.MenuUI && (!window.MenuUI.overlay || !window.MenuUI.overlay.classList.contains("hidden"))) {
+                Draw.drawBackground();
+                return;
+            }
             switch (Game.screen) {
             case "main_menu":
-                Draw.drawMainMenu();
+                // Do not render legacy canvas main menu; HTML overlay handles it
+                Draw.drawBackground();
                 break;
             case "game_over":
                 Draw.drawGameOver();
@@ -232,33 +105,93 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
         };
 
         var drawPlayerShip = function drawPlayerShip() {
-            var sprite, sx, sy, width, height, x, y, frame;
-			frame = Character.ship.player.frame;
-            x = Character.ship.player.pos.x;
-            y = Character.ship.player.pos.y;
-            sprite = Character.ship.player.sprite;
-            width = Character.ship.player.width;
-            height = Character.ship.player.height;
-            sy = 0;
+            var ctx = Canvas.context;
+            var x = Character.ship.player.pos.x;
+            var y = Character.ship.player.pos.y;
+            var width = Character.ship.player.width;
+            var height = Character.ship.player.height;
+            var frame = Character.ship.player.frame;
+            
             if (Character.ship.player.hp > 0) {
-                Canvas.context.drawImage(Images.gun0, x + 55, y - 8.5);
-                if (frame === 0) {
-                    sx = 0;
-                } else if (frame === 1) {
-                    sx = 75;
-                } else if (frame === 2) {
-                    sx = 150;
-                } else if (frame === 3) {
-                    sx = 225;
-                }
+                // Draw custom modern spaceship
+                ctx.save();
+                
+                // Ship body - main fuselage
+                var gradient = ctx.createLinearGradient(x, y - height/2, x + width, y + height/2);
+                gradient.addColorStop(0, "#00ccff");
+                gradient.addColorStop(0.5, "#0088ff");
+                gradient.addColorStop(1, "#0044aa");
+                
+                // Main body (streamlined)
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(x + width, y); // Nose point
+                ctx.lineTo(x + width * 0.3, y - height * 0.4); // Top left
+                ctx.lineTo(x, y - height * 0.25); // Top back
+                ctx.lineTo(x, y + height * 0.25); // Bottom back
+                ctx.lineTo(x + width * 0.3, y + height * 0.4); // Bottom left
+                ctx.closePath();
+                ctx.fill();
+                
+                // Cockpit (glowing)
+                ctx.fillStyle = "#00ffff";
+                ctx.shadowColor = "#00ffff";
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.ellipse(x + width * 0.7, y, width * 0.15, height * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                
+                // Wings (top and bottom)
+                ctx.fillStyle = "#0066cc";
+                // Top wing
+                ctx.beginPath();
+                ctx.moveTo(x + width * 0.4, y - height * 0.3);
+                ctx.lineTo(x + width * 0.2, y - height * 0.6);
+                ctx.lineTo(x, y - height * 0.5);
+                ctx.lineTo(x + width * 0.3, y - height * 0.25);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Bottom wing
+                ctx.beginPath();
+                ctx.moveTo(x + width * 0.4, y + height * 0.3);
+                ctx.lineTo(x + width * 0.2, y + height * 0.6);
+                ctx.lineTo(x, y + height * 0.5);
+                ctx.lineTo(x + width * 0.3, y + height * 0.25);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Engine glow (animated)
+                var engineGlow = 0.5 + Math.sin(Date.now() * 0.01) * 0.5;
+                ctx.fillStyle = "rgba(255, 100, 0, " + engineGlow + ")";
+                ctx.shadowColor = "#ff6600";
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.ellipse(x + width * 0.05, y, width * 0.12, height * 0.15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Engine exhaust particles
+                ctx.fillStyle = "rgba(255, 150, 0, 0.6)";
+                ctx.beginPath();
+                ctx.ellipse(x - 5, y, 8, 12, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+                
+                // Frame animation
                 Character.ship.player.frame += 1;
                 if (Character.ship.player.frame >= 4) {
                     Character.ship.player.frame = 0;
                 }
             } else {
+                // Explosion animation
+                var sprite = Images.explosion;
+                var sx, sy;
 				width = 192;
 				height = 192;
-				sprite = Images.explosion;
+                sy = 0;
+                
 				if (frame === 0) {
                     sx = 0;
                 } else if (frame <= 1) {
@@ -279,8 +212,8 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
 					sy = 192;
                 }
                 Character.ship.player.frame += 0.2;
+                ctx.drawImage(sprite, sx, sy, width, height, x, y - (height / 2), width, height);
 			}
-			Canvas.context.drawImage(sprite, sx, sy, width, height, x, y - (height / 2), width, height);
         };
 
         var drawPowerups = function drawPowerups() {
@@ -305,7 +238,12 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
                 if (enemies[i].alive) {
                     relativeTime = Game.timer - GameLogic.level.startTime;
                     if (relativeTime > enemies[i].time) {
-                        Canvas.context.drawImage(enemies[i].ship, enemies[i].x, enemies[i].y);
+                        // Rotate enemy ships to face horizontally (perpendicular to player)
+                        Canvas.context.save();
+                        Canvas.context.translate(enemies[i].x + enemies[i].width/2, enemies[i].y + enemies[i].height/2);
+                        Canvas.context.rotate(Math.PI/2); // 90 degree rotation to face horizontally
+                        Canvas.context.drawImage(enemies[i].ship, -enemies[i].width/2, -enemies[i].height/2);
+                        Canvas.context.restore();
                         if (enemies[i].x <= -140) {
                             enemies[i].alive = false;
                             Character.ship.player.score -= enemies[i].score * 1.4;
@@ -323,7 +261,7 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
                             if (enemies[i].fireRate > 0) {
                                 if ((relativeTime-enemies[i].time) % enemies[i].fireRate <= 0.02) {
                                     enemies[i].hasShot = true;
-                                    Action.enemyShoot(enemies[i].x, enemies[i].y, enemies[i].damage);
+                                    Action.enemyShoot(enemies[i].x, enemies[i].y, enemies[i].width, enemies[i].height, enemies[i].damage);
                                 }
                             }
                         }
@@ -359,15 +297,105 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
         };
 
         var drawScore = function drawScore() {
-            var score = Character.ship.player.score;
-            Canvas.context.fillStyle = ("yellow");
-            Canvas.context.fillText("Score: " + score, Canvas.canvasWidth * 0.6, 40);
+            var score = Math.floor(Character.ship.player.score);
+            var ctx = Canvas.context;
+            var cw = Canvas.canvasWidth;
+            var ch = Canvas.canvasHeight;
+            
+            // Responsive sizing
+            var panelWidth = Math.min(cw * 0.35, 160);
+            var panelHeight = Math.min(ch * 0.06, 40);
+            var fontSize = Math.max(12, Math.min(cw / 40, 20));
+            var padding = Math.max(10, cw * 0.02);
+            
+            ctx.save();
+            
+            // Background panel (touching right/top edge)
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(cw - panelWidth, 0, panelWidth, panelHeight);
+            
+            // Border
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.8)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(cw - panelWidth, 0, panelWidth, panelHeight);
+            
+            // Score text
+            ctx.font = "bold " + fontSize + "px Arial";
+            ctx.fillStyle = "#FFD700";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.shadowColor = "rgba(255, 215, 0, 0.6)";
+            ctx.shadowBlur = 8;
+            ctx.fillText("SCORE: " + score, cw - panelWidth * 0.1, panelHeight / 2);
+            
+            ctx.restore();
         };
 
         var drawHP = function drawHP() {
-            var hp = Character.ship.player.hp;
-            Canvas.context.fillStyle = ("yellow");
-            Canvas.context.fillText("Health: " + hp, 0, 40);
+            var hp = Math.floor(Character.ship.player.hp);
+            var maxHp = 100;
+            var ctx = Canvas.context;
+            var cw = Canvas.canvasWidth;
+            var ch = Canvas.canvasHeight;
+            
+            // Responsive sizing
+            var panelWidth = Math.min(cw * 0.35, 160);
+            var panelHeight = Math.min(ch * 0.06, 40);
+            var padding = Math.max(10, cw * 0.02);
+            var barPadding = Math.max(5, cw * 0.01);
+            
+            ctx.save();
+            
+            // Background panel (touching left/top edge)
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(0, 0, panelWidth, panelHeight);
+            
+            // Health bar dimensions
+            var barX = barPadding;
+            var barY = barPadding;
+            var barWidth = panelWidth - barPadding * 2;
+            var barHeight = panelHeight - barPadding * 2;
+            
+            // Health bar background
+            ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            
+            // Health bar fill
+            var healthPercent = Math.max(0, Math.min(1, hp / maxHp));
+            var fillWidth = barWidth * healthPercent;
+            
+            // Color based on health with gradient
+            var gradient = ctx.createLinearGradient(barX, barY, barX + fillWidth, barY);
+            if (hp > 60) {
+                gradient.addColorStop(0, "#00ff00");
+                gradient.addColorStop(1, "#00cc00");
+            } else if (hp > 30) {
+                gradient.addColorStop(0, "#ffaa00");
+                gradient.addColorStop(1, "#ff8800");
+            } else {
+                gradient.addColorStop(0, "#ff3333");
+                gradient.addColorStop(1, "#cc0000");
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(barX, barY, fillWidth, barHeight);
+            
+            // Health bar border
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+            
+            // HP text - responsive font size
+            var fontSize = Math.max(10, Math.min(barHeight * 0.6, 14));
+            ctx.font = "bold " + fontSize + "px Arial";
+            ctx.fillStyle = "#fff";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+            ctx.shadowBlur = 4;
+            ctx.fillText("HP: " + hp, barX + barWidth / 2, barY + barHeight / 2);
+            
+            ctx.restore();
         };
 
         var drawGameOver = function drawGameOver() {
@@ -379,102 +407,119 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             
             Draw.drawPlayerShip();
             
-            // Modern gradient background panel
-            var panelWidth = cw * 0.5;
-            var panelHeight = ch * 0.65;
-            var panelX = (cw - panelWidth) / 2;
-            var panelY = (ch - panelHeight) / 2;
+            ctx.save();
             
-            // Semi-transparent panel with red glow
-            ctx.shadowColor = "rgba(255, 50, 50, 0.6)";
-            ctx.shadowBlur = 40;
-            var gradient = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelHeight);
-            gradient.addColorStop(0, "rgba(25, 10, 10, 0.95)");
+            // Dark overlay
+            ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+            ctx.fillRect(0, 0, cw, ch);
+            
+            // Modern panel
+            var panelW = Math.min(cw * 0.9, 450);
+            var panelH = ch * 0.65;
+            var panelX = (cw - panelW) / 2;
+            var panelY = (ch - panelH) / 2;
+            
+            // Panel background with gradient
+            var gradient = ctx.createLinearGradient(panelX, panelY, panelX, panelY + panelH);
+            gradient.addColorStop(0, "rgba(30, 10, 10, 0.95)");
             gradient.addColorStop(1, "rgba(50, 15, 15, 0.95)");
             ctx.fillStyle = gradient;
-            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+            ctx.fillRect(panelX, panelY, panelW, panelH);
+            
+            // Panel border with glow
+            ctx.shadowColor = "rgba(255, 50, 50, 0.8)";
+            ctx.shadowBlur = 25;
+            ctx.strokeStyle = "rgba(255, 50, 50, 0.9)";
+            ctx.lineWidth = 3;
+            ctx.strokeRect(panelX, panelY, panelW, panelH);
             ctx.shadowBlur = 0;
             
-            // Border glow
-            ctx.strokeStyle = "rgba(255, 50, 50, 0.9)";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+            // GAME OVER title - responsive
+            var titleFontSize = Math.max(20, Math.min(cw / 13, 48));
+            var badgeFontSize = Math.max(14, Math.min(cw / 28, 22));
+            var statsFontSize = Math.max(12, Math.min(cw / 32, 18));
+            var scoreFontSize = Math.max(16, Math.min(cw / 25, 28));
+            var btnFontSize = Math.max(14, Math.min(cw / 30, 20));
             
-            // Title: GAME OVER
-            ctx.save();
             ctx.shadowColor = "rgba(255, 0, 0, 0.9)";
-            ctx.shadowBlur = 30;
-            ctx.font = "bold " + Math.floor(cw / 14) + "px Arial";
+            ctx.shadowBlur = Math.min(35, cw / 15);
+            ctx.font = "bold " + titleFontSize + "px Arial";
             ctx.fillStyle = "#ff3333";
             ctx.textAlign = "center";
-            ctx.fillText("GAME OVER", cw / 2, panelY + ch * 0.1);
-            ctx.restore();
+            ctx.textBaseline = "middle";
+            ctx.fillText("GAME OVER", cw / 2, panelY + panelH * 0.18);
+            ctx.shadowBlur = 0;
             
             // High Score badge
             if (Game.isHighscore) {
-                ctx.save();
                 ctx.shadowColor = "rgba(255, 215, 0, 0.8)";
                 ctx.shadowBlur = 20;
-                ctx.font = "bold " + Math.floor(cw / 30) + "px Arial";
+                ctx.font = "bold " + badgeFontSize + "px Arial";
                 ctx.fillStyle = "#FFD700";
-                ctx.textAlign = "center";
-                ctx.fillText("★ NEW HIGH SCORE ★", cw / 2, panelY + ch * 0.17);
-                ctx.restore();
+                ctx.fillText("★ NEW HIGH SCORE! ★", cw / 2, panelY + panelH * 0.28);
+                ctx.shadowBlur = 0;
             }
             
-            // Stats display
-            ctx.font = "bold " + Math.floor(cw / 35) + "px Arial";
+            // Stats - responsive
+            ctx.font = "bold " + statsFontSize + "px Arial";
             ctx.fillStyle = "rgba(200, 220, 255, 0.9)";
-            ctx.textAlign = "center";
-            ctx.fillText("LEVEL: " + Game.level, cw / 2, panelY + ch * 0.25);
+            ctx.fillText("LEVEL: " + Game.level, cw / 2, panelY + panelH * 0.4);
             
-            ctx.font = "bold " + Math.floor(cw / 28) + "px Arial";
+            ctx.font = "bold " + scoreFontSize + "px Arial";
             ctx.fillStyle = "#ffaa00";
-            ctx.fillText("SCORE: " + Math.floor(Character.ship.player.score), cw / 2, panelY + ch * 0.32);
+            ctx.fillText("SCORE: " + Math.floor(Character.ship.player.score), cw / 2, panelY + panelH * 0.5);
             
-            // Button definitions
-            var buttonWidth = panelWidth * 0.7;
-            var buttonHeight = ch * 0.08;
-            var buttonX = cw / 2 - buttonWidth / 2;
-            var startY = panelY + ch * 0.4;
-            var buttonSpacing = ch * 0.12;
+            // Buttons - responsive sizing
+            var btnW = Math.min(panelW * 0.75, 280);
+            var btnH = Math.max(ch * 0.06, 35);
+            var btnX = cw / 2 - btnW / 2;
+            var btnSpacing = Math.max(10, ch * 0.02);
+            var btn1Y = panelY + panelH * 0.62;
+            var btn2Y = btn1Y + btnH + btnSpacing;
             
-            var buttons = [
-                {label: "RESTART", y: startY, color: "#44ff44"},
-                {label: "MAIN MENU", y: startY + buttonSpacing, color: "#00aaff"}
-            ];
+            // RESTART button
+            var isRestartHovered = mouseX >= btnX && mouseX <= btnX + btnW && 
+                                   mouseY >= btn1Y && mouseY <= btn1Y + btnH;
+            if (isRestartHovered) {
+                ctx.shadowColor = "#44ff44";
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = "#44ff44";
+            } else {
+                ctx.fillStyle = "rgba(40, 80, 40, 0.7)";
+            }
+            ctx.fillRect(btnX, btn1Y, btnW, btnH);
+            ctx.strokeStyle = isRestartHovered ? "#44ff44" : "rgba(100, 200, 100, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(btnX, btn1Y, btnW, btnH);
+            ctx.shadowBlur = 0;
             
-            // Draw buttons
-            buttons.forEach(function(btn) {
-                var isHovered = mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                               mouseY >= btn.y && mouseY <= btn.y + buttonHeight;
-                
-                // Button background
-                if (isHovered) {
-                    ctx.shadowColor = btn.color;
-                    ctx.shadowBlur = 20;
-                    var btnGradient = ctx.createLinearGradient(buttonX, btn.y, buttonX, btn.y + buttonHeight);
-                    btnGradient.addColorStop(0, btn.color);
-                    btnGradient.addColorStop(1, "rgba(0, 0, 0, 0.3)");
-                    ctx.fillStyle = btnGradient;
-                } else {
-                    ctx.fillStyle = "rgba(30, 50, 80, 0.6)";
-                }
-                
-                ctx.fillRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                ctx.shadowBlur = 0;
-                
-                // Button border
-                ctx.strokeStyle = isHovered ? btn.color : "rgba(100, 150, 200, 0.5)";
-                ctx.lineWidth = isHovered ? 3 : 2;
-                ctx.strokeRect(buttonX, btn.y, buttonWidth, buttonHeight);
-                
-                // Button text
-                ctx.font = "bold " + Math.floor(cw / 35) + "px Arial";
-                ctx.fillStyle = isHovered ? "#fff" : "rgba(200, 220, 255, 0.9)";
-                ctx.textAlign = "center";
-                ctx.fillText(btn.label, cw / 2, btn.y + buttonHeight / 2 + buttonHeight * 0.12);
-            });
+            ctx.font = "bold " + btnFontSize + "px Arial";
+            ctx.fillStyle = isRestartHovered ? "#000" : "#fff";
+            ctx.textBaseline = "middle";
+            ctx.fillText("RESTART", cw / 2, btn1Y + btnH / 2);
+            
+            // MAIN MENU button
+            var isMenuHovered = mouseX >= btnX && mouseX <= btnX + btnW && 
+                                mouseY >= btn2Y && mouseY <= btn2Y + btnH;
+            if (isMenuHovered) {
+                ctx.shadowColor = "#00aaff";
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = "#00aaff";
+            } else {
+                ctx.fillStyle = "rgba(20, 40, 80, 0.7)";
+            }
+            ctx.fillRect(btnX, btn2Y, btnW, btnH);
+            ctx.strokeStyle = isMenuHovered ? "#00aaff" : "rgba(100, 150, 200, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(btnX, btn2Y, btnW, btnH);
+            ctx.shadowBlur = 0;
+            
+            ctx.font = "bold " + btnFontSize + "px Arial";
+            ctx.fillStyle = isMenuHovered ? "#000" : "#fff";
+            ctx.textBaseline = "middle";
+            ctx.fillText("MAIN MENU", cw / 2, btn2Y + btnH / 2);
+            
+            ctx.restore();
         };
 
         var drawStats = function drawStats() {
@@ -517,8 +562,50 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
                 Draw.drawScore();
                 Draw.drawHP();
             } else {
-                Canvas.context.fillStyle = ("yellow");
-                Canvas.context.fillText("Level: " + Game.level, (Canvas.canvasWidth / 2) - 80, Canvas.canvasHeight / 2);
+                // Modern level transition screen - fully responsive
+                var ctx = Canvas.context;
+                var cw = Canvas.canvasWidth;
+                var ch = Canvas.canvasHeight;
+                
+                ctx.save();
+                
+                // Dark overlay
+                ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+                ctx.fillRect(0, 0, cw, ch);
+                
+                // Responsive font sizes
+                var completeFontSize = Math.max(16, Math.min(cw / 18, 32));
+                var levelFontSize = Math.max(24, Math.min(cw / 10, 60));
+                var subtitleFontSize = Math.max(12, Math.min(cw / 28, 20));
+                
+                // Congratulations (only after level 1)
+                if (Game.level > 1) {
+                    ctx.shadowColor = "rgba(0, 255, 100, 0.8)";
+                    ctx.shadowBlur = Math.min(30, cw / 20);
+                    ctx.font = "bold " + completeFontSize + "px Arial";
+                    ctx.fillStyle = "#00ff66";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText("★ LEVEL COMPLETE! ★", cw / 2, ch / 2 - ch * 0.12);
+                    ctx.shadowBlur = 0;
+                }
+                
+                // Level number with glow effect
+                ctx.shadowColor = "rgba(255, 215, 0, 0.9)";
+                ctx.shadowBlur = Math.min(35, cw / 15);
+                ctx.font = "bold " + levelFontSize + "px Arial";
+                ctx.fillStyle = "#FFD700";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("LEVEL " + Game.level, cw / 2, ch / 2);
+                
+                // Get ready message
+                ctx.shadowBlur = 0;
+                ctx.font = subtitleFontSize + "px Arial";
+                ctx.fillStyle = "rgba(200, 220, 255, 0.9)";
+                ctx.fillText("Prepare for Battle...", cw / 2, ch / 2 + ch * 0.1);
+                
+                ctx.restore();
             }
             Draw.drawBullets();
             Draw.drawPlayerShip();

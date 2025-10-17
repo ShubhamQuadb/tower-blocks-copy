@@ -41,14 +41,8 @@ define(["view/draw", "model/game", "controller/gameLogic", "controller/action", 
     var changeTextSize = function changeTextSize() {
         var width = Canvas.canvasWidth;
         var height = Canvas.canvasHeight;
-        if (width < 835 || height < 444) {
-            if (!Game.paused) {
-                GameRunner.pauseGame();
-            }
-            Game.screenTooSmall = true;
-        } else {
-            Game.screenTooSmall = false;
-        }
+        // Smartphone: never auto-pause for small screens; allow play at any size
+        Game.screenTooSmall = false;
         if (!Game.screenTooSmall) {
             if (width >= 1300 && height >= 500) {
                 Canvas.context.font = "40px Verdana";

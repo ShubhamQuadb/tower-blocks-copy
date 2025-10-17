@@ -4,7 +4,10 @@
 <head>
     <title>Space Battle</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="shortcut icon" href="./images/logo/favicon.ico" />
     <link rel="stylesheet" href="css/main.css" />
     <script src="js/require.js" data-main="js/main"></script>
@@ -355,15 +358,15 @@
                         <button type="button" class="menu-btn stats" onclick="event.preventDefault(); MenuUI.showStats(); return false;">Statistics</button>
                         <button type="button" class="menu-btn help" onclick="event.preventDefault(); MenuUI.showHelp(); return false;">Help</button>
                     </div>
-                    <p class="menu-footer">Tap to select | ESC to exit</p>
                 `;
                 this.show();
             },
             
             showOptions: function() {
                 this.currentScreen = 'options';
-                const musicState = localStorage.getItem('muteMusic') === 'true' ? 'off' : 'on';
-                const sfxState = localStorage.getItem('muteSFX') === 'true' ? 'off' : 'on';
+                // Game engine uses 'music' and 'sfx' keys where 'true' = enabled
+                const musicState = localStorage.getItem('music') === 'false' ? 'off' : 'on';
+                const sfxState = localStorage.getItem('sfx') === 'false' ? 'off' : 'on';
                 
                 this.container.innerHTML = `
                     <h1 class="menu-title" style="color: #ffaa00;">OPTIONS</h1>
@@ -460,38 +463,58 @@
             toggleMusic: function(btn) {
                 const currentState = btn.classList.contains('on');
                 if (currentState) {
+                    // Turn OFF
                     btn.classList.remove('on');
                     btn.classList.add('off');
                     btn.textContent = 'OFF';
-                    localStorage.setItem('muteMusic', 'true');
+                    localStorage.setItem('music', 'false');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteMusic = true;
+                    }
+                    // Stop background music if playing
+                    if (window.Sounds && window.Sounds.bgMusic) {
+                        window.Sounds.bgMusic.pause();
+                    }
                 } else {
+                    // Turn ON
                     btn.classList.remove('off');
                     btn.classList.add('on');
                     btn.textContent = 'ON';
-                    localStorage.setItem('muteMusic', 'false');
-                }
-                // Trigger game's music toggle if available
-                if (window.Game && window.Game.muteMusic !== undefined) {
-                    window.Game.muteMusic = !currentState;
+                    localStorage.setItem('music', 'true');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteMusic = false;
+                    }
+                    // Play background music
+                    if (window.Sounds && window.Sounds.bgMusic) {
+                        window.Sounds.bgMusic.play();
+                    }
                 }
             },
             
             toggleSFX: function(btn) {
                 const currentState = btn.classList.contains('on');
                 if (currentState) {
+                    // Turn OFF
                     btn.classList.remove('on');
                     btn.classList.add('off');
                     btn.textContent = 'OFF';
-                    localStorage.setItem('muteSFX', 'true');
+                    localStorage.setItem('sfx', 'false');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteSFX = true;
+                    }
                 } else {
+                    // Turn ON
                     btn.classList.remove('off');
                     btn.classList.add('on');
                     btn.textContent = 'ON';
-                    localStorage.setItem('muteSFX', 'false');
-                }
-                // Trigger game's SFX toggle if available
-                if (window.Game && window.Game.muteSFX !== undefined) {
-                    window.Game.muteSFX = !currentState;
+                    localStorage.setItem('sfx', 'true');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteSFX = false;
+                    }
                 }
             },
             

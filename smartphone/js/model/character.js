@@ -2,8 +2,8 @@ define(["model/images"], function (Images) {
     var player = {
         name: "player1",
         sprite: Images.playerShip,
-        width: 75,
-        height: 99,
+        width: 50,  // Reduced from 75 for smaller rocket
+        height: 66, // Reduced from 99 to maintain aspect ratio
         frame: 0,
         score: 0,
         damage: 10,
