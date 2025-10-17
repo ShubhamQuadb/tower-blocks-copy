@@ -302,37 +302,39 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             var cw = Canvas.canvasWidth;
             var ch = Canvas.canvasHeight;
             
-            // Responsive sizing - compact for top center
-            var panelWidth = Math.max(100, Math.min(cw * 0.25, 150));
-            var panelHeight = Math.max(28, Math.min(ch * 0.055, 38));
-            var fontSize = Math.max(10, Math.min(cw / 55, 14));
-            var margin = Math.max(5, cw * 0.01);
-            var gap = Math.max(10, cw * 0.02); // Increased gap
+            // Responsive sizing - matching feature phone style
+            var panelWidth = Math.max(90, Math.min(cw * 0.22, 110));
+            var panelHeight = Math.max(28, Math.min(ch * 0.055, 35));
+            var labelFontSize = Math.max(9, Math.min(cw / 90, 11));
+            var valueFontSize = Math.max(14, Math.min(cw / 45, 18));
+            var margin = 5;
             
             ctx.save();
             
-            // Position: top center, right side of HP
-            var totalWidth = panelWidth * 2 + gap;
-            var startX = (cw - totalWidth) / 2;
-            var posX = startX + panelWidth + gap;
+            // Position: top right corner (like feature phone)
+            var posX = cw - panelWidth - margin;
             var posY = margin;
             
-            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            // Background - blue style matching feature phone
+            ctx.fillStyle = "rgba(0, 53, 102, 0.7)";
             ctx.fillRect(posX, posY, panelWidth, panelHeight);
             
-            // Border - thinner and more subtle
-            ctx.strokeStyle = "rgba(255, 215, 0, 0.7)";
-            ctx.lineWidth = 1.5;
+            // Border - cyan blue style matching feature phone
+            ctx.strokeStyle = "#00b4d8";
+            ctx.lineWidth = 1;
             ctx.strokeRect(posX, posY, panelWidth, panelHeight);
             
-            // Score text - centered in panel
-            ctx.font = "bold " + fontSize + "px Arial";
-            ctx.fillStyle = "#FFD700";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(255, 215, 0, 0.7)";
-            ctx.shadowBlur = 6;
-            ctx.fillText("SCORE: " + score, posX + panelWidth / 2, posY + panelHeight / 2);
+            // Score label
+            ctx.fillStyle = "#90e0ef";
+            ctx.font = "bold " + labelFontSize + "px Arial";
+            ctx.textAlign = "left";
+            ctx.fillText("SCORE", posX + 5, posY + 10);
+            
+            // Score value
+            ctx.fillStyle = "#ffd60a";
+            ctx.font = "bold " + valueFontSize + "px Arial";
+            ctx.textAlign = "right";
+            ctx.fillText(score, posX + panelWidth - 5, posY + panelHeight - 5);
             
             ctx.restore();
         };
@@ -344,68 +346,54 @@ define(["model/images", "model/canvas", "model/game", "model/character", "contro
             var cw = Canvas.canvasWidth;
             var ch = Canvas.canvasHeight;
             
-            // Responsive sizing - compact for top center (matching score panel)
-            var panelWidth = Math.max(100, Math.min(cw * 0.25, 150));
-            var panelHeight = Math.max(28, Math.min(ch * 0.055, 38));
-            var barPadding = Math.max(3, cw * 0.006);
-            var margin = Math.max(5, cw * 0.01);
-            var gap = Math.max(10, cw * 0.02); // Increased gap to match Score
+            // Responsive sizing - matching feature phone style
+            var panelWidth = Math.max(85, Math.min(cw * 0.21, 105));
+            var panelHeight = Math.max(28, Math.min(ch * 0.055, 35));
+            var labelFontSize = Math.max(9, Math.min(cw / 90, 11));
+            var valueFontSize = Math.max(9, Math.min(cw / 70, 11));
+            var margin = 5;
             
             ctx.save();
             
-            // Position: top center, left side before Score
-            var totalWidth = panelWidth * 2 + gap;
-            var startX = (cw - totalWidth) / 2;
-            var posX = startX;
+            // Position: top left corner (like feature phone)
+            var posX = margin;
             var posY = margin;
             
-            ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+            // Background - blue style matching feature phone
+            ctx.fillStyle = "rgba(0, 53, 102, 0.7)";
             ctx.fillRect(posX, posY, panelWidth, panelHeight);
             
-            // Health bar dimensions (inside panel)
-            var barX = posX + barPadding;
-            var barY = posY + barPadding;
-            var barWidth = panelWidth - barPadding * 2;
-            var barHeight = panelHeight - barPadding * 2;
+            // Border - cyan blue style matching feature phone
+            ctx.strokeStyle = "#00b4d8";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(posX, posY, panelWidth, panelHeight);
             
-            // Health bar background
-            ctx.fillStyle = "rgba(50, 50, 50, 0.8)";
+            // HP label
+            ctx.fillStyle = "#90e0ef";
+            ctx.font = "bold " + labelFontSize + "px Arial";
+            ctx.textAlign = "left";
+            ctx.fillText("HEALTH", posX + 5, posY + 10);
+            
+            // HP bar background
+            var barX = posX + 5;
+            var barY = posY + 14;
+            var barWidth = panelWidth - 10;
+            var barHeight = 10;
+            
+            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
             ctx.fillRect(barX, barY, barWidth, barHeight);
             
-            // Health bar fill
-            var healthPercent = Math.max(0, Math.min(1, hp / maxHp));
-            var fillWidth = barWidth * healthPercent;
+            // HP bar - color based on health (matching feature phone colors)
+            var hpWidth = (hp / maxHp) * barWidth;
+            var hpColor = hp > 60 ? "#00ff41" : hp > 30 ? "#ffd60a" : "#dc2f02";
+            ctx.fillStyle = hpColor;
+            ctx.fillRect(barX, barY, hpWidth, barHeight);
             
-            // Color based on health with gradient
-            var gradient = ctx.createLinearGradient(barX, barY, barX + fillWidth, barY);
-            if (hp > 60) {
-                gradient.addColorStop(0, "#00ff00");
-                gradient.addColorStop(1, "#00cc00");
-            } else if (hp > 30) {
-                gradient.addColorStop(0, "#ffaa00");
-                gradient.addColorStop(1, "#ff8800");
-            } else {
-                gradient.addColorStop(0, "#ff3333");
-                gradient.addColorStop(1, "#cc0000");
-            }
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(barX, barY, fillWidth, barHeight);
-            
-            // Health bar border - thinner like score panel
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(barX, barY, barWidth, barHeight);
-            
-            // HP text - responsive font size and centered
-            var fontSize = Math.max(9, Math.min(barHeight * 0.6, 13));
-            ctx.font = "bold " + fontSize + "px Arial";
-            ctx.fillStyle = "#fff";
+            // HP percentage text
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "bold " + valueFontSize + "px Arial";
             ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-            ctx.shadowBlur = 3;
-            ctx.fillText("HP: " + hp, barX + barWidth / 2, barY + barHeight / 2);
+            ctx.fillText(hp + "%", barX + barWidth / 2, barY + 8);
             
             ctx.restore();
         };
