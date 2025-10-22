@@ -2,8 +2,8 @@ define(["model/images"], function (Images) {
     var player = {
         name: "player1",
         sprite: Images.playerShip,
-        width: 75,
-        height: 99,
+        width: 35,
+        height: 46,
         frame: 0,
         score: 0,
         damage: 10,
@@ -21,8 +21,8 @@ define(["model/images"], function (Images) {
         scout: scout = {
             name: "scout",
             ship: Images.scout,
-            width: 84,
-            height: 93,
+            width: 25,
+            height: 28,
             hp: 10,
             alive: true,
             damage: 0,
@@ -32,13 +32,13 @@ define(["model/images"], function (Images) {
             x: 0,
             y: 0,
             time: 0,
-            speed: 7
+            speed: 2.5
         },
         fighter: fighter = {
             name: "fighter",
             ship: Images.fighter,
-            width: 84,
-            height: 104,
+            width: 25,
+            height: 31,
             hp: 30,
             alive: true,
             damage: 10,
@@ -48,13 +48,13 @@ define(["model/images"], function (Images) {
             x: 100,
             y: 100,
             time: 0,
-            speed: 3
+            speed: 1.5
         },
         interceptor: interceptor = {
             name: "interceptor",
             ship: Images.interceptor,
-            width: 84,
-            height: 103,
+            width: 38,
+            height: 46,
             hp: 30,
             alive: true,
             damage: 10,
@@ -64,13 +64,13 @@ define(["model/images"], function (Images) {
             x: 100,
             y: 100,
             time: 0,
-            speed: 2.5
+            speed: 1.8
         },
         tank: tank = {
             name: "tank",
             ship: Images.tank,
-            width: 84,
-            height: 82,
+            width: 38,
+            height: 37,
             hp: 60,
             alive: true,
             damage: 0,
@@ -80,13 +80,13 @@ define(["model/images"], function (Images) {
             x: 100,
             y: 100,
             time: 0,
-            speed: 2
+            speed: 1.2
         },
         transport: transport = {
             name: "transport",
             ship: Images.transport,
-            width: 84,
-            height: 97,
+            width: 38,
+            height: 44,
             hp: 30,
             alive: true,
             damage: 0,
@@ -96,7 +96,7 @@ define(["model/images"], function (Images) {
             x: 100,
             y: 100,
             time: 0,
-            speed: 3
+            speed: 1.8
         }
 
     };

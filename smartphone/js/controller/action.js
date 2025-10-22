@@ -5,9 +5,18 @@ define(["model/game", "model/canvas", "model/character", "model/images", "model/
             Game.keyboard.use = false;
             Game.mouse.use = true;
             var rect = Canvas.canvas.getBoundingClientRect();
-            Game.mouse.pos.x = evt.clientX - rect.left;
-            Game.mouse.pos.y = evt.clientY - rect.top;
-            Character.ship.player.pos.y = Game.mouse.pos.y;
+            
+            // Scale mouse coordinates to canvas coordinates
+            var scaleX = Canvas.canvas.width / rect.width;
+            var scaleY = Canvas.canvas.height / rect.height;
+            
+            Game.mouse.pos.x = (evt.clientX - rect.left) * scaleX;
+            Game.mouse.pos.y = (evt.clientY - rect.top) * scaleY;
+            
+            if (Game.screen === "game") {
+                Character.ship.player.pos.y = Game.mouse.pos.y;
+            }
+            
             if (Game.mouse.pos.x <= 0 || Game.mouse.pos.x >= Canvas.canvasWidth || Game.mouse.pos.y <= 0 || Game.mouse.pos.y >= Canvas.canvasHeight) {
                 clearInterval(Action.shooting);
             }
@@ -103,6 +112,8 @@ define(["model/game", "model/canvas", "model/character", "model/images", "model/
             mouseX = Game.mouse.pos.x;
             mouseY = Game.mouse.pos.y;
             
+            console.log("Game Over Click - Mouse:", mouseX, mouseY, "Canvas:", cw, ch);
+            
             // Match responsive UI from draw.js drawGameOver
             var panelW = Math.min(cw * 0.9, 450);
             var panelH = ch * 0.65;
@@ -116,29 +127,42 @@ define(["model/game", "model/canvas", "model/character", "model/images", "model/
             var btn1Y = panelY + panelH * 0.62;
             var btn2Y = btn1Y + btnH + btnSpacing;
             
-            // RESTART button
+            console.log("Button areas - Restart:", btnX, btn1Y, btnW, btnH, "Menu:", btnX, btn2Y, btnW, btnH);
+            
+            // RESTART button - check if clicked
             if (mouseX >= btnX && mouseX <= btnX + btnW && 
                 mouseY >= btn1Y && mouseY <= btn1Y + btnH) {
+                console.log("RESTART button clicked!");
                 if (!Game.muteSFX) {
                     Sounds.select.play();
                 }
                 Action.resetVariables();
                 Game.screen = "game";
                 GameLogic.level.start();
+                return;
             }
             
-            // MAIN MENU button
+            // MAIN MENU button - check if clicked
             if (mouseX >= btnX && mouseX <= btnX + btnW && 
                 mouseY >= btn2Y && mouseY <= btn2Y + btnH) {
+                console.log("MAIN MENU button clicked!");
                 if (!Game.muteSFX) {
                     Sounds.select.play();
                 }
+                Action.resetVariables();
                 Game.screen = "main_menu";
                 // Show HTML/CSS menu overlay when returning to menu
                 if (typeof window !== "undefined" && window.MenuUI && window.MenuUI.showMainMenu) {
-                    try { window.MenuUI.showMainMenu(); } catch (e) {}
+                    try { 
+                        window.MenuUI.showMainMenu(); 
+                    } catch (e) {
+                        console.error("MenuUI error:", e);
+                    }
                 }
+                return;
             }
+            
+            console.log("No button clicked");
         };
 
         var optionsButtonCheck = function optionsButtonCheck() {
@@ -292,6 +316,7 @@ define(["model/game", "model/canvas", "model/character", "model/images", "model/
             Game.levelStarted = false;
             InPlay.enemies.length = 0;
             InPlay.enemyBullets.length = 0;
+            InPlay.playerBullets.length = 0;
             InPlay.powerUps.length = 0;
             //character resets
             Character.ship.player.score = 0;
@@ -299,6 +324,9 @@ define(["model/game", "model/canvas", "model/character", "model/images", "model/
             Character.ship.player.guns = 1;
             Character.ship.player.damage = 10;
 			Character.ship.player.fireRate = 3;
+            Character.ship.player.hasShot = false;
+            Character.ship.player.pos.x = 40;
+            Character.ship.player.pos.y = 100;
         };
 
         var Action = {
