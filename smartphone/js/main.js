@@ -4,6 +4,21 @@ define(["model/sounds", "model/images", "model/canvas", "model/character", "mode
         window.Game = Game;
         window.Sounds = Sounds;
         
+        // JioGames SDK Integration
+        console.log("Space Battle: Initializing JioGames SDK...");
+        
+        // Get user profile on game initialization
+        // if (typeof getUserProfile === 'function') {
+        //     getUserProfile();
+        //     console.log("Space Battle: getUserProfile() called");
+        // }
+        
+        // Cache ads on game initialization
+        // if (typeof gameCacheAd === 'function') {
+        //     gameCacheAd();
+        //     console.log("Space Battle: gameCacheAd() called - Ads caching started");
+        // }
+        
         LSM.init();
         LSM.load();
         if (!Game.muteMusic && window.requestAnimationFrame !== undefined) {

@@ -43,6 +43,13 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
 
     var startLevel = function startLevel() {
         console.log("Space Battle: Starting Level " + Game.level);
+        
+        // Cache ad for next game over (JioGames SDK)
+        // if (typeof cacheAd === 'function') {
+        //     cacheAd();
+        //     console.log("Space Battle: Caching midroll ad for level " + Game.level);
+        // }
+        
         setTimeout(function () {
             if (!Game.muteSFX) {
                 Sounds.levelUp.play();
@@ -240,17 +247,30 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
         enemies.length = 0;
         Game.levelStarted = false;
         Game.gameOver = true;
-        console.log("Space Battle: Game Over - Score: " + Math.floor(Character.ship.player.score) + ", Level: " + Game.level);
+        
+        var finalScore = Math.floor(Character.ship.player.score);
+        console.log("Space Battle: Game Over - Score: " + finalScore + ", Level: " + Game.level);
+        
         if (Game.highscore < Character.ship.player.score) {
             isHighscore = true;
             Game.highscore = Character.ship.player.score;
             console.log("Space Battle: NEW HIGH SCORE! " + Math.floor(Game.highscore));
-            // Post score to SDK
-            if (typeof postScore === 'function') {
-                postScore(Math.floor(Game.highscore));
-                console.log("Space Battle: Score posted to SDK");
-            }
         }
+        
+        // Post score to JioGames SDK (always post current score)
+        // if (typeof postScore === 'function') {
+        //     postScore(finalScore);
+        //     console.log("Space Battle: Score posted to SDK - " + finalScore);
+        // }
+        
+        // Show midroll ad on game over (JioGames SDK)
+        // if (typeof showAd === 'function') {
+        //     setTimeout(function() {
+        //         showAd();
+        //         console.log("Space Battle: Showing midroll ad");
+        //     }, 500);
+        // }
+        
         GameLogic.uploadStats(isHighscore);
         Game.screen = "game_over";
     };
