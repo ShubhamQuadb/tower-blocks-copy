@@ -437,10 +437,41 @@ window.onAdMediaEnd = function(adSpotKey, reward) {
 
 //#region "SDK Initialization"
 
+// Export all SDK functions as global JioGames object
+window.JioGames = {
+    postScore: postScore,
+    cacheAdMidRoll: cacheAdMidRoll,
+    showAdMidRoll: showAdMidRoll,
+    cacheAdRewardedVideo: cacheAdRewardedVideo,
+    showAdRewardedVideo: showAdRewardedVideo,
+    getUserProfile: getUserProfile,
+    cacheAd: cacheAd,
+    cacheAdRewarded: cacheAdRewarded,
+    showAd: showAd,
+    showAdRewarded: showAdRewarded,
+    gameCacheAd: gameCacheAd,
+    GratifyReward: GratifyReward,
+    // Configuration
+    config: {
+        packageName: packageName,
+        adSpotInterstitial: adSpotInterstitial,
+        adSpotRewardedVideo: adSpotRewardedVideo,
+        banner_ZoneKey: banner_ZoneKey,
+        bannerPackageName: bannerPackageName
+    },
+    // State
+    state: {
+        isAdReady: function() { return isAdReady; },
+        isRVReady: function() { return isRVReady; }
+    },
+    version: "1.0.0"
+};
+
 console.log("=== JioGames SDK Initialized Successfully! ===");
 console.log("SDK Version: 1.0.0");
 console.log("Platform: KaiOS/JioPhone");
 console.log("Package:", packageName);
+console.log("JioGames Object:", window.JioGames);
 console.log("===========================================");
 
 // Auto-initialize on load

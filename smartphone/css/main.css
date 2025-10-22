@@ -117,20 +117,28 @@ section#gameSection {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a14 100%) !important;
+  background: linear-gradient(135deg, #0a0015 0%, #1a0530 25%, #0d1b3e 50%, #0a0820 75%, #000000 100%) !important;
+  animation: backgroundShift 20s ease-in-out infinite !important;
+}
+
+@keyframes backgroundShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 #gameCanvas {
   display: block !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  object-fit: contain;
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  touch-action: none;
 }
 
 @font-face {
@@ -178,8 +186,8 @@ section.credits a {
 }
 
 #gameCanvas {
-	cursor: crosshair;
-	position: absolute;
-	top: 69px;
-	left: 0px;
+    cursor: crosshair;
+    position: absolute;
+    top: 0px !important;
+    left: 0px !important;
 }

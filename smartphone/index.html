@@ -4,10 +4,35 @@
 <head>
     <title>Space Battle</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="shortcut icon" href="./images/logo/favicon.ico" />
     <link rel="stylesheet" href="css/main.css" />
+    <script src="jiogames_sp_wrapper.js"></script>
     <script src="js/require.js" data-main="js/main"></script>
+    <script>
+        // Console logging for debugging
+        console.log("Space Battle Smartphone - Game Initialized");
+        window.addEventListener('load', function() {
+            console.log("Space Battle - Page Loaded");
+            
+            // JioGames SDK Integration - Get user profile on game load
+            setTimeout(function() {
+                if (typeof getUserProfile === 'function') {
+                    getUserProfile();
+                    console.log("Space Battle: User profile requested");
+                }
+                
+                // Cache ads with 5 second delay between them
+                if (typeof gameCacheAd === 'function') {
+                    gameCacheAd();
+                    console.log("Space Battle: Ads caching started");
+                }
+            }, 1000);
+        });
+    </script>
     <style>
         * {
             margin: 0;
@@ -38,24 +63,18 @@
         
         #gameCanvas {
             display: block;
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
+            width: 100%;
+            height: 100%;
+            max-width: 100vw;
+            max-height: 100vh;
+            object-fit: contain;
             image-rendering: crisp-edges;
             image-rendering: pixelated;
+            touch-action: none;
         }
         
         h1.error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            text-align: center;
-            font-size: 1.5rem;
-            padding: 20px;
-            z-index: 10;
+            display: none; /* hide fallback text so it doesn't overlay menu */
         }
         
         /* Hide old header for fullscreen experience */
@@ -70,17 +89,19 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             animation: fadeIn 0.5s ease-in;
+            pointer-events: auto;
         }
         
         #menuOverlay.hidden {
             display: none;
+            pointer-events: none;
         }
         
         @keyframes fadeIn {
@@ -207,6 +228,17 @@
             background: linear-gradient(145deg, #00aaff, rgba(0, 0, 0, 0.3));
             border-color: #00aaff;
             box-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
+            color: #fff;
+        }
+        
+        .menu-btn.exit {
+            border-color: #ff3333;
+        }
+        
+        .menu-btn.exit:hover, .menu-btn.exit:active {
+            background: linear-gradient(145deg, #ff3333, rgba(0, 0, 0, 0.3));
+            border-color: #ff3333;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
             color: #fff;
         }
         
@@ -356,39 +388,40 @@
                     <h1 class="menu-title">SPACE BATTLE</h1>
                     <p class="menu-subtitle">THE ULTIMATE SPACE COMBAT EXPERIENCE</p>
                     <div class="menu-buttons">
-                        <button class="menu-btn start" onclick="MenuUI.startGame()">Start Game</button>
-                        <button class="menu-btn options" onclick="MenuUI.showOptions()">Options</button>
-                        <button class="menu-btn stats" onclick="MenuUI.showStats()">Statistics</button>
-                        <button class="menu-btn help" onclick="MenuUI.showHelp()">Help</button>
+                        <button type="button" class="menu-btn start" onclick="event.preventDefault(); MenuUI.startGame(); return false;">Start Game</button>
+                        <button type="button" class="menu-btn options" onclick="event.preventDefault(); MenuUI.showOptions(); return false;">Options</button>
+                        <button type="button" class="menu-btn stats" onclick="event.preventDefault(); MenuUI.showStats(); return false;">Statistics</button>
+                        <button type="button" class="menu-btn help" onclick="event.preventDefault(); MenuUI.showHelp(); return false;">Help</button>
+                        <button type="button" class="menu-btn exit" onclick="event.preventDefault(); MenuUI.exitGame(); return false;">Exit</button>
                     </div>
-                    <p class="menu-footer">Tap to select | ESC to exit</p>
                 `;
                 this.show();
             },
             
             showOptions: function() {
                 this.currentScreen = 'options';
-                const musicState = localStorage.getItem('muteMusic') === 'true' ? 'off' : 'on';
-                const sfxState = localStorage.getItem('muteSFX') === 'true' ? 'off' : 'on';
+                // Game engine uses 'music' and 'sfx' keys where 'true' = enabled
+                const musicState = localStorage.getItem('music') === 'false' ? 'off' : 'on';
+                const sfxState = localStorage.getItem('sfx') === 'false' ? 'off' : 'on';
                 
                 this.container.innerHTML = `
                     <h1 class="menu-title" style="color: #ffaa00;">OPTIONS</h1>
                     <div class="options-container">
                         <div class="option-row">
                             <span class="option-label">Music</span>
-                            <button class="toggle-btn ${musicState}" onclick="MenuUI.toggleMusic(this)">
+                            <button type="button" class="toggle-btn ${musicState}" onclick="event.preventDefault(); MenuUI.toggleMusic(this); return false;">
                                 ${musicState.toUpperCase()}
                             </button>
                         </div>
                         <div class="option-row">
                             <span class="option-label">Sound FX</span>
-                            <button class="toggle-btn ${sfxState}" onclick="MenuUI.toggleSFX(this)">
+                            <button type="button" class="toggle-btn ${sfxState}" onclick="event.preventDefault(); MenuUI.toggleSFX(this); return false;">
                                 ${sfxState.toUpperCase()}
                             </button>
                         </div>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -433,11 +466,11 @@
                             <div class="stat-value">${transport}</div>
                         </div>
                         <div class="stat-item" style="grid-column: 1 / -1;">
-                            <button class="menu-btn" onclick="MenuUI.resetStats()" style="width: 100%; margin: 0;">Reset Stats</button>
+                            <button type="button" class="menu-btn" onclick="event.preventDefault(); MenuUI.resetStats(); return false;" style="width: 100%; margin: 0;">Reset Stats</button>
                         </div>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -458,7 +491,7 @@
                         <p style="margin-bottom: 10px;">Collect power-ups to upgrade your weapons.</p>
                     </div>
                     <div class="menu-buttons">
-                        <button class="menu-btn back" onclick="MenuUI.showMainMenu()">Back to Menu</button>
+                        <button type="button" class="menu-btn back" onclick="event.preventDefault(); MenuUI.showMainMenu(); return false;">Back to Menu</button>
                     </div>
                 `;
             },
@@ -466,38 +499,58 @@
             toggleMusic: function(btn) {
                 const currentState = btn.classList.contains('on');
                 if (currentState) {
+                    // Turn OFF
                     btn.classList.remove('on');
                     btn.classList.add('off');
                     btn.textContent = 'OFF';
-                    localStorage.setItem('muteMusic', 'true');
+                    localStorage.setItem('music', 'false');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteMusic = true;
+                    }
+                    // Stop background music if playing
+                    if (window.Sounds && window.Sounds.bgMusic) {
+                        window.Sounds.bgMusic.pause();
+                    }
                 } else {
+                    // Turn ON
                     btn.classList.remove('off');
                     btn.classList.add('on');
                     btn.textContent = 'ON';
-                    localStorage.setItem('muteMusic', 'false');
-                }
-                // Trigger game's music toggle if available
-                if (window.Game && window.Game.muteMusic !== undefined) {
-                    window.Game.muteMusic = !currentState;
+                    localStorage.setItem('music', 'true');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteMusic = false;
+                    }
+                    // Play background music
+                    if (window.Sounds && window.Sounds.bgMusic) {
+                        window.Sounds.bgMusic.play();
+                    }
                 }
             },
             
             toggleSFX: function(btn) {
                 const currentState = btn.classList.contains('on');
                 if (currentState) {
+                    // Turn OFF
                     btn.classList.remove('on');
                     btn.classList.add('off');
                     btn.textContent = 'OFF';
-                    localStorage.setItem('muteSFX', 'true');
+                    localStorage.setItem('sfx', 'false');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteSFX = true;
+                    }
                 } else {
+                    // Turn ON
                     btn.classList.remove('off');
                     btn.classList.add('on');
                     btn.textContent = 'ON';
-                    localStorage.setItem('muteSFX', 'false');
-                }
-                // Trigger game's SFX toggle if available
-                if (window.Game && window.Game.muteSFX !== undefined) {
-                    window.Game.muteSFX = !currentState;
+                    localStorage.setItem('sfx', 'true');
+                    // Update game state
+                    if (window.Game) {
+                        window.Game.muteSFX = false;
+                    }
                 }
             },
             
@@ -514,41 +567,77 @@
             
             startGame: function() {
                 this.hide();
-                // Wait for game to load then simulate click
+                
+                // Directly trigger game start by simulating canvas click
                 setTimeout(() => {
-                    const canvas = document.getElementById('gameCanvas');
-                    if (!canvas) return;
-                    
-                    // Get canvas dimensions
-                    const rect = canvas.getBoundingClientRect();
-                    const canvasWidth = canvas.width;
-                    const canvasHeight = canvas.height;
-                    
-                    // Calculate start button position (matching draw.js button positions)
-                    const part1 = canvasWidth / 4;
-                    const part2 = canvasHeight / 4;
-                    const btnX = part1 * 1.2 + (part1 * 0.75) / 2; // Center of start button
-                    const btnY = part2 + (part2 * 0.7) / 2;
-                    
-                    // Create and dispatch click event
-                    const clickEvent = new MouseEvent('click', {
-                        clientX: rect.left + (btnX * rect.width / canvasWidth),
-                        clientY: rect.top + (btnY * rect.height / canvasHeight),
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                    });
-                    canvas.dispatchEvent(clickEvent);
-                }, 100);
+                    try {
+                        const canvas = document.getElementById('gameCanvas');
+                        if (!canvas) {
+                            console.error('Canvas not found');
+                            return;
+                        }
+                        
+                        // Get canvas actual dimensions
+                        const canvasWidth = canvas.width;
+                        const canvasHeight = canvas.height;
+                        
+                        // Calculate start button center position (from action.js logic)
+                        const part1 = canvasWidth / 4;
+                        const part2 = canvasHeight / 4;
+                        const btnCenterX = part1 * 1.2 + (part1 * 0.75) / 2;
+                        const btnCenterY = part2 + (part2 * 0.7) / 2;
+                        
+            // Convert canvas coords -> page coords with rect scaling
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = rect.width / canvas.width;
+            const scaleY = rect.height / canvas.height;
+
+            const pageX = rect.left + window.scrollX + btnCenterX * scaleX;
+            const pageY = rect.top + window.scrollY + btnCenterY * scaleY;
+
+            // Dispatch proper mouse sequence (move, down, up, click)
+            const moveEvent = new MouseEvent('mousemove', {bubbles:true, clientX: pageX, clientY: pageY});
+            const downEvent = new MouseEvent('mousedown', {bubbles:true, clientX: pageX, clientY: pageY});
+            const upEvent   = new MouseEvent('mouseup',   {bubbles:true, clientX: pageX, clientY: pageY});
+            const clickEvent= new MouseEvent('click',     {bubbles:true, clientX: pageX, clientY: pageY});
+
+            canvas.dispatchEvent(moveEvent);
+            canvas.dispatchEvent(downEvent);
+            canvas.dispatchEvent(upEvent);
+            canvas.dispatchEvent(clickEvent);
+                        
+                        console.log('Start game click dispatched at:', btnCenterX, btnCenterY);
+                    } catch (error) {
+                        console.error('Error starting game:', error);
+                    }
+                }, 200);
+            },
+            
+            exitGame: function() {
+                if (confirm('Are you sure you want to exit Space Battle?')) {
+                    // Close the window/tab or go back
+                    window.close();
+                    // If window.close() doesn't work (some browsers block it), show a message
+                    setTimeout(() => {
+                        alert('Please close this tab/window to exit the game.');
+                    }, 100);
+                }
             }
         };
         
         // Initialize menu after canvas game loads
-        window.addEventListener('DOMContentLoaded', function() {
-            // Wait for canvas and game to initialize
+        window.addEventListener('load', function() {
+            // Wait for game engine to fully initialize
             setTimeout(() => {
-                MenuUI.init();
-            }, 500);
+                // Check if game canvas is ready
+                const canvas = document.getElementById('gameCanvas');
+                if (canvas && canvas.getContext) {
+                    console.log('Canvas ready, showing menu');
+                    MenuUI.init();
+                } else {
+                    console.error('Canvas not ready');
+                }
+            }, 1000);
         });
         
         // Handle ESC key to show menu

@@ -42,6 +42,14 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
     };
 
     var startLevel = function startLevel() {
+        console.log("Space Battle: Starting Level " + Game.level);
+        
+        // Cache ad for next game over (JioGames SDK)
+        // if (typeof cacheAd === 'function') {
+        //     cacheAd();
+        //     console.log("Space Battle: Caching midroll ad for level " + Game.level);
+        // }
+        
         setTimeout(function () {
             if (!Game.muteSFX) {
                 Sounds.levelUp.play();
@@ -49,6 +57,7 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
             Game.levelStarted = true;
             GameLogic.timer.start();
             GameLogic.addEnemies();
+            console.log("Space Battle: Level " + Game.level + " started with enemies");
         }, 3000);
     };
 
@@ -188,22 +197,43 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
         var player = Character.ship.player;
         var playerPos = Character.ship.player.pos;
         var ship;
+        
         for (ship = 0; ship < enemies.length; ship++) {
             if (Character.ship.player.hp > 0 && enemies[ship].alive) {
-                if ((enemies[ship].x >= playerPos.x && enemies[ship].x <= (playerPos.x + player.width)) || (enemies[ship].x + enemies[ship].width >= playerPos.x && enemies[ship].x + enemies[ship].width <= (playerPos.x + player.width))) {
-                    if ((enemies[ship].y >= (playerPos.y - player.height) && enemies[ship].y <= (playerPos.y + player.height / 2)) || ((playerPos.y - player.height / 2) >= enemies[ship].y && (playerPos.y - player.height / 2) <= (enemies[ship].y + enemies[ship].height))) {
+                // More precise collision detection - check if rectangles overlap
+                var enemyLeft = enemies[ship].x;
+                var enemyRight = enemies[ship].x + enemies[ship].width;
+                var enemyTop = enemies[ship].y;
+                var enemyBottom = enemies[ship].y + enemies[ship].height;
+                
+                var playerLeft = playerPos.x;
+                var playerRight = playerPos.x + player.width;
+                var playerTop = playerPos.y - player.height / 2;
+                var playerBottom = playerPos.y + player.height / 2;
+                
+                // Check if rectangles intersect (no gap = collision)
+                var isColliding = !(enemyRight < playerLeft || 
+                                   enemyLeft > playerRight || 
+                                   enemyBottom < playerTop || 
+                                   enemyTop > playerBottom);
+                
+                if (isColliding) {
+                    if (!Game.muteSFX) {
+                        Sounds.playerHit.play();
+                        Sounds.death.play();
+                    }
+                    // Enemy explodes immediately on contact
+                    enemies[ship].alive = false;
+                    GameLogic.addScore(enemies[ship].score);
+                    
+                    // Player takes damage
+                    Character.ship.player.hp -= enemies[ship].hp;
+                    
+                    if (Character.ship.player.hp <= 0) {
                         if (!Game.muteSFX) {
-                            Sounds.playerHit.play();
-                            Sounds.death.play();
+                            Sounds.explosion.play();
                         }
-                        enemies[ship].alive = false;
-                        Character.ship.player.hp -= enemies[ship].hp;
-                        if (Character.ship.player.hp <= 0) {
-                            if (!Game.muteSFX) {
-                                Sounds.explosion.play();
-                            }
-                            GameLogic.gameOver();
-                        }
+                        GameLogic.gameOver();
                     }
                 }
             }
@@ -217,10 +247,30 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
         enemies.length = 0;
         Game.levelStarted = false;
         Game.gameOver = true;
+        
+        var finalScore = Math.floor(Character.ship.player.score);
+        console.log("Space Battle: Game Over - Score: " + finalScore + ", Level: " + Game.level);
+        
         if (Game.highscore < Character.ship.player.score) {
             isHighscore = true;
             Game.highscore = Character.ship.player.score;
+            console.log("Space Battle: NEW HIGH SCORE! " + Math.floor(Game.highscore));
         }
+        
+        // Post score to JioGames SDK (always post current score)
+        // if (typeof postScore === 'function') {
+        //     postScore(finalScore);
+        //     console.log("Space Battle: Score posted to SDK - " + finalScore);
+        // }
+        
+        // Show midroll ad on game over (JioGames SDK)
+        // if (typeof showAd === 'function') {
+        //     setTimeout(function() {
+        //         showAd();
+        //         console.log("Space Battle: Showing midroll ad");
+        //     }, 500);
+        // }
+        
         GameLogic.uploadStats(isHighscore);
         Game.screen = "game_over";
     };
@@ -317,6 +367,9 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
                 enemy.y = y;
                 enemy.x = x;
 				enemy.hp += Game.level * (Math.floor(Game.level / 2) - 1);
+                // Increase speed by 2% per level
+                var speedMultiplier = 1 + (Game.level - 1) * 0.02;
+                enemy.speed = enemy.speed * speedMultiplier;
                 enemy.time = time;
                 time += rate;
                 InPlay.enemies.push(enemy);
