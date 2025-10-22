@@ -7,8 +7,8 @@ var gameVersion = "V1.0.0";
 var isAdReady = false;
 var isRVReady = false;
 
-var banner_ZoneKey = "";
-var bannerPackageName = "";
+var banner_ZoneKey = "l9mp2wfq";
+var bannerPackageName = "com.kaifoundry.spacebattle";
 
 //#endregion
 
