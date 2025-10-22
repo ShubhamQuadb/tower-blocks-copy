@@ -42,6 +42,7 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
     };
 
     var startLevel = function startLevel() {
+        console.log("Space Battle: Starting Level " + Game.level);
         setTimeout(function () {
             if (!Game.muteSFX) {
                 Sounds.levelUp.play();
@@ -49,6 +50,7 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
             Game.levelStarted = true;
             GameLogic.timer.start();
             GameLogic.addEnemies();
+            console.log("Space Battle: Level " + Game.level + " started with enemies");
         }, 3000);
     };
 
@@ -238,9 +240,16 @@ define(["model/game", "model/character", "model/inPlay", "model/canvas", "model/
         enemies.length = 0;
         Game.levelStarted = false;
         Game.gameOver = true;
+        console.log("Space Battle: Game Over - Score: " + Math.floor(Character.ship.player.score) + ", Level: " + Game.level);
         if (Game.highscore < Character.ship.player.score) {
             isHighscore = true;
             Game.highscore = Character.ship.player.score;
+            console.log("Space Battle: NEW HIGH SCORE! " + Math.floor(Game.highscore));
+            // Post score to SDK
+            if (typeof postScore === 'function') {
+                postScore(Math.floor(Game.highscore));
+                console.log("Space Battle: Score posted to SDK");
+            }
         }
         GameLogic.uploadStats(isHighscore);
         Game.screen = "game_over";
