@@ -209,6 +209,17 @@
             color: #fff;
         }
         
+        .menu-btn.exit {
+            border-color: #ff3333;
+        }
+        
+        .menu-btn.exit:hover, .menu-btn.exit:active {
+            background: linear-gradient(145deg, #ff3333, rgba(0, 0, 0, 0.3));
+            border-color: #ff3333;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.6);
+            color: #fff;
+        }
+        
         .menu-footer {
             font-size: clamp(0.7rem, 2.5vw, 0.9rem);
             color: rgba(150, 170, 200, 0.7);
@@ -359,6 +370,7 @@
                         <button type="button" class="menu-btn options" onclick="event.preventDefault(); MenuUI.showOptions(); return false;">Options</button>
                         <button type="button" class="menu-btn stats" onclick="event.preventDefault(); MenuUI.showStats(); return false;">Statistics</button>
                         <button type="button" class="menu-btn help" onclick="event.preventDefault(); MenuUI.showHelp(); return false;">Help</button>
+                        <button type="button" class="menu-btn exit" onclick="event.preventDefault(); MenuUI.exitGame(); return false;">Exit</button>
                     </div>
                 `;
                 this.show();
@@ -577,6 +589,17 @@
                         console.error('Error starting game:', error);
                     }
                 }, 200);
+            },
+            
+            exitGame: function() {
+                if (confirm('Are you sure you want to exit Space Battle?')) {
+                    // Close the window/tab or go back
+                    window.close();
+                    // If window.close() doesn't work (some browsers block it), show a message
+                    setTimeout(() => {
+                        alert('Please close this tab/window to exit the game.');
+                    }, 100);
+                }
             }
         };
         
