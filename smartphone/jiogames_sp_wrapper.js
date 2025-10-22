@@ -1,12 +1,14 @@
 //#region "Variable"
-var adSpotInterstitial = "zbjnq9gs";
-var adSpotRewardedVideo = "81xnt9bw";
-var packageName = "com.jiogames.testsp";
+var adSpotInterstitial = "u4ck1t92";
+var adSpotRewardedVideo = "729jl614";
+var packageName = "com.kaifoundry.spacebattle";
+var gameName = "spacebattle";
+var gameVersion = "V1.0.0";
 var isAdReady = false;
 var isRVReady = false;
 
-var banner_ZoneKey = "l9mp2wfq";
-var bannerPackageName = "com.jiogames.test";
+var banner_ZoneKey = "";
+var bannerPackageName = "";
 
 //#endregion
 

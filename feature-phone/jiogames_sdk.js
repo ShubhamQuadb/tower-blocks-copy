@@ -9,12 +9,12 @@ console.log("=== JioGames SDK Loading... ===");
 //#region "Configuration Variables"
 var adSpotInterstitial = "zbjnq9gs";
 var adSpotRewardedVideo = "81xnt9bw";
-var packageName = "com.jiogames.spacebattle";
+var packageName = "com.kaifoundry.spacebattle";
 var isAdReady = false;
 var isRVReady = false;
 
 var banner_ZoneKey = "l9mp2wfq";
-var bannerPackageName = "com.jiogames.spacebattle";
+var bannerPackageName = "com.kaifoundry.spacebattle";
 //#endregion
 
 console.log("JioGames SDK: Configuration loaded");
