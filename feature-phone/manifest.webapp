@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "name": "Space Battle",
+  "short_name": "SpaceBattle",
+  "description": "Classic Space Battle game for KaiOS",
+  "launch_path": "/index.html",
+  "icons": {
+    "56": "/icons/icon-56.png",
+    "112": "/icons/icon-112.png"
+  },
+  "developer": {
+    "name": "Space Battle Dev",
+    "url": "https://example.com"
+  },
+  "type": "web",
+  "default_locale": "en-US",
+  "orientation": "portrait-primary",
+  "display": "fullscreen",
+  "permissions": {},
+  "cursor": {
+    "mode": "tab"
+  }
+}
+
+
+
