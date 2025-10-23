@@ -3,7 +3,7 @@
   "version_code": 1,
   "name": "Space Battle",
   "short_name": "SpaceBattle",
-  "package": "com.kaifoundry.spacebattle",
+  "package": "com.kaifoundry.spacebattle.sp",
   "description": "Classic Space Battle game for smartphones",
   "start_url": "/index.html",
   "launch_path": "/index.html",

@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "name": "Space Battle",
   "short_name": "SpaceBattle",
-  "package": "com.kaifoundry.spacebattle",
+  "package": "com.kaifoundry.spacebattle.fp",
   "description": "Classic Space Battle game for KaiOS",
   "launch_path": "/index.html",
   "icons": {
