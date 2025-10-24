@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Mobile Game Testing - JioGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #667eea;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .game-link {
+            display: block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .game-link:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .game-link.smartphone {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        
+        .game-link.feature-phone {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+        
+        .game-link.stb {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.3);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box p {
+            color: #1976d2;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .ip-display {
+            background: #333;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 JioGames Mobile Testing</h1>
+        <p class="subtitle">Test all games on your mobile device</p>
+        
+        <div class="info-box">
+            <p><strong>📱 Instructions:</strong><br>
+            1. Make sure your mobile and PC are on the same WiFi<br>
+            2. Click on any game link below to test it<br>
+            3. Games will auto-rotate to landscape mode</p>
+        </div>
+        
+        <div class="ip-display">
+            Server: http://10.226.236.155:3000
+        </div>
+        
+        <!-- Smartphone Games -->
+        <div class="section">
+            <div class="section-title">📱 Smartphone Games (Landscape Mode)</div>
+            
+        <a href="http://10.226.236.155:3000/tower-blocks/smartphone/index.html?v=37" class="game-link smartphone">
+            🏗️ Tower Blocks <span class="badge">Smartphone</span>
+        </a>
+            
+            <a href="http://10.226.236.155:3000/space-battle/smartphone/index.html" class="game-link smartphone">
+                🚀 Space Battle <span class="badge">Smartphone</span>
+            </a>
+            
+            <a href="http://10.226.236.155:3000/pacman/smartphone/index.html" class="game-link smartphone">
+                👻 Pacman <span class="badge">Smartphone</span>
+            </a>
+        </div>
+        
+        <!-- Feature Phone Games -->
+        <div class="section">
+            <div class="section-title">📞 Feature Phone Games (KaiOS/JioPhone)</div>
+            
+            <a href="http://10.226.236.155:8000/tower-blocks/feature-phone/index.html" class="game-link feature-phone">
+                🏗️ Tower Blocks <span class="badge">Feature Phone</span>
+            </a>
+            
+            <a href="http://10.226.236.155:8000/space-battle/feature-phone/index.html" class="game-link feature-phone">
+                🚀 Space Battle <span class="badge">Feature Phone</span>
+            </a>
+            
+            <a href="http://10.226.236.155:8000/pacman/feature-phone/index.html" class="game-link feature-phone">
+                👻 Pacman <span class="badge">Feature Phone</span>
+            </a>
+        </div>
+        
+        <!-- STB Games -->
+        <div class="section">
+            <div class="section-title">📺 Set-Top Box Games (Jio STB)</div>
+            
+            <a href="http://10.226.236.155:8000/tower-blocks/STB/index.html" class="game-link stb">
+                🏗️ Tower Blocks <span class="badge">STB 4K</span>
+            </a>
+        </div>
+        
+        <!-- Main Index -->
+        <div class="section">
+            <div class="section-title">🏠 Main Pages</div>
+            
+            <a href="http://10.226.236.155:8000/" class="game-link" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                🏠 All Games Home
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        console.log("Mobile Test Page Loaded");
+        console.log("Server IP: 10.226.236.155:8000");
+        
+        // Log device info
+        console.log("Device:", navigator.userAgent);
+        console.log("Screen:", window.screen.width + "x" + window.screen.height);
+        console.log("Orientation:", screen.orientation ? screen.orientation.type : "unknown");
+    </script>
+</body>
+</html>
+
+
+
