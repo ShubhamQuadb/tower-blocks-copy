@@ -1,5 +1,7 @@
 # Tower Blocks - Smartphone Version
 
+This repository contains **only the smartphone version** of Tower Blocks game.
+
 ## 📱 Responsive Design
 
 This version is optimized for modern smartphones and tablets with responsive design.
@@ -12,15 +14,23 @@ This version is optimized for modern smartphones and tablets with responsive des
 
 ## 🚀 Quick Start
 
-1. Open `index.html` in any modern browser
-2. Click or tap to start the game
-3. Stack blocks as high as you can!
+1. Navigate to `tower-blocks-dev/smartphone/` directory
+2. Open `index.html` in any modern browser
+3. Click or tap to start the game
+4. Stack blocks as high as you can!
 
-## 📋 Files
+## 📋 Files Structure
 
-- `index.html` - Main HTML file
-- `app.js` - Game logic (full features)
-- `style.css` - Responsive styles
+```
+tower-blocks-dev/
+  └── smartphone/
+      ├── index.html          - Main HTML file
+      ├── app.js              - Game logic (full features)
+      ├── style.css           - Responsive styles
+      ├── jiogames_sp_wrapper.js - JioGames SDK wrapper
+      ├── manifest.json       - App manifest
+      └── icons/              - App icons
+```
 
 ## 🔧 Technical Details
 
