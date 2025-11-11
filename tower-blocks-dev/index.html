@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-navbutton-color" content="#000000">
+    <meta name="apple-mobile-web-app-title" content="Tower Blocks">
+    <meta name="application-name" content="Tower Blocks">
+<script src="https://codepen.io/steveg3003/pen/zBVakw"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    <title>Block Tower</title>
+    
+    
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <script  src="app.js" async></script>
+<div id="container">
+	<div id="game"></div>
+	<div id="score">0</div>
+	<div id="instructions">Click (or press the spacebar) to place the block</div>
+	<div class="game-over">
+		<h2>Game Over</h2>
+		<p>You did great, you're the best.</p>
+		<p>Click or spacebar to start again</p>
+	</div>
+	<div class="game-ready">
+		<div id="start-button">Start</div>
+		<div></div>
+	</div>
+	<!-- Exit button -->
+	<div id="exit-button" onclick="exitToMainMenu()">✕</div>
+        <!-- Fullscreen button -->
+        <div id="fullscreen-button" onclick="toggleFullscreen()">📦</div>
+</div>
+<script>
+// Auto fullscreen and double-tap functionality
+window.addEventListener('load', function() {
+    console.log("Tower Blocks - Page Loaded");
+    
+        // Show drag notification for 3 seconds
+        setTimeout(function() {
+            showDragNotification();
+        }, 1000);
+        
+        // Add drag-to-fullscreen functionality
+        addDragToFullscreen();
+        
+        // Remove all automatic fullscreen triggers
+        // Fullscreen will be drag-based only
+});
+</script>
+<script>
+function exitToMainMenu() {
+    if (window.parent && window.parent !== window) {
+        // If in iframe, try to communicate with parent
+        window.parent.postMessage('exitGame', '*');
+    } else {
+        // If standalone, redirect to main menu
+        window.location.href = '../index.html';
+    }
+}
+
+// Global variable to track fullscreen state
+let isFullscreenActive = false;
+let fullscreenAttempted = false;
+let dragStartY = 0;
+let dragStartTime = 0;
+
+function showDragNotification() {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.id = 'drag-notification';
+    notification.innerHTML = '📱 Drag up to go fullscreen';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 150, 255, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.5s ease-out;
+    `;
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(function() {
+        notification.style.animation = 'fadeOut 0.5s ease-out';
+        setTimeout(function() {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 500);
+    }, 3000);
+}
+
+function addDragToFullscreen() {
+    console.log("Tower Blocks: Adding drag to fullscreen functionality");
+    
+    // Simple touch swipe detection
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    
+    // Touch start
+    document.addEventListener('touchstart', function(e) {
+        if (isFullscreenActive) {
+            console.log("Tower Blocks: Already in fullscreen, ignoring touch");
+            return;
+        }
+        
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+        console.log("Tower Blocks: Touch started at Y:", touchStartY);
+    }, { passive: true });
+    
+    // Touch end - simple swipe detection
+    document.addEventListener('touchend', function(e) {
+        if (isFullscreenActive) {
+            console.log("Tower Blocks: Already in fullscreen, ignoring touch");
+            return;
+        }
+        
+        const touchEndY = e.changedTouches[0].clientY;
+        const swipeDistance = touchStartY - touchEndY; // Positive means swiped up
+        const swipeTime = Date.now() - touchStartTime;
+        
+        console.log("Tower Blocks: Touch ended - Distance:", swipeDistance, "Time:", swipeTime);
+        
+        // Very sensitive condition: swipe up more than 10px in less than 3 seconds
+        if (swipeDistance > 10 && swipeTime < 3000) {
+            console.log("Tower Blocks: Small swipe up detected! Going fullscreen...");
+            toggleFullscreen();
+        }
+    }, { passive: true });
+    
+    // Also add a simple tap-to-fullscreen as backup
+    let tapCount = 0;
+    let tapTimer = null;
+    
+    document.addEventListener('touchend', function(e) {
+        if (isFullscreenActive) return;
+        
+        tapCount++;
+        console.log("Tower Blocks: Tap count:", tapCount);
+        
+        if (tapCount === 1) {
+            tapTimer = setTimeout(function() {
+                tapCount = 0;
+            }, 1000);
+        } else if (tapCount === 2) {
+            clearTimeout(tapTimer);
+            tapCount = 0;
+            console.log("Tower Blocks: Double tap detected! Going fullscreen...");
+            toggleFullscreen();
+        }
+    }, { passive: true });
+}
+
+function toggleFullscreen() {
+    console.log("Tower Blocks: Toggle fullscreen called");
+    
+    // If already in fullscreen, don't do anything
+    if (isFullscreenActive) {
+        console.log("Tower Blocks: Already in fullscreen, ignoring request");
+        return;
+    }
+    
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+        // Enter fullscreen
+        console.log("Tower Blocks: Entering fullscreen");
+        isFullscreenActive = true;
+        fullscreenAttempted = true;
+        
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log("Tower Blocks: Fullscreen failed:", err);
+                // Try alternative method for mobile
+                if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                }
+            });
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+        
+        // Hide address bar on mobile
+        setTimeout(function() {
+            window.scrollTo(0, 1);
+        }, 100);
+        
+    } else {
+        // Exit fullscreen
+        console.log("Tower Blocks: Exiting fullscreen");
+        isFullscreenActive = false;
+        
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+</script>
+</body>
+</html>

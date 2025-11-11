@@ -1,0 +1,9 @@
+{
+  "id": "com.kaifoundry.towerblocksSTB",
+  "version": "1.0.0",
+  "type": "web",
+  "title": "Tower Blocks - Jio STB 4K Edition",
+  "main": "index.html",
+  "icon": "icons/icon-112.svg",
+  "largeIcon": "icons/icon-112.svg"
+}

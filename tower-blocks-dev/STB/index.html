@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Android TV / Jio STB Optimized Viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a0b2e">
+    <title>Tower Blocks - Jio STB 4K Edition</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Three.js for 3D rendering with OpenGL ES support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="loading-logo-text">🏗️</div>
+            </div>
+            <h1 class="loading-title">TOWER BLOCKS</h1>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading Game for TV...</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JioGames STB SDK -->
+    <script src="jiogames_stb_wrapper.js"></script>
+    <script>
+        // Console logging for STB SDK
+        console.log("Tower Blocks - STB SDK initialized");
+        window.addEventListener('load', function() {
+            console.log("Tower Blocks STB - Page Loaded");
+            // Immediately prepare interstitial cache on game load (one-time)
+            try { if (typeof cacheAd === 'function') { cacheAd(); } } catch(e){}
+            // Load and show banner on TV home/game (bottom)
+            try{
+                if (typeof loadBanner === 'function') { loadBanner(); }
+                setTimeout(function(){ if (typeof showBanner === 'function') { showBanner(); if (typeof setBottomBanner === 'function') { setBottomBanner(); } } }, 600);
+            }catch(e){}
+            
+            // JioGames SDK Integration - Get user profile on game load
+            setTimeout(function() {
+                if (typeof getUserProfile === 'function') {
+                    getUserProfile();
+                    console.log("Tower Blocks STB: User profile requested");
+                }
+                
+                // Cache ads with 5 second delay between them
+                if (typeof gameCacheAd === 'function') {
+                    gameCacheAd();
+                    console.log("Tower Blocks STB: Ads caching started");
+                }
+            }, 1000);
+        });
+    </script>
+    
+    <div id="container">
+        <div id="game"></div>
+        <div id="score">0</div>
+        <div id="instructions">Press OK/ENTER to place the block</div>
+        <div class="game-over">
+            <h2>🎮 Game Over</h2>
+            <p>Amazing Score! You're doing great!</p>
+            <p>Press <strong>OK/ENTER</strong> to play again</p>
+        </div>
+        <div class="game-ready">
+            <div id="start-button">🎮 Start Game</div>
+            <div class="how-to-play">
+                <h3>📺 How to Play on TV</h3>
+                <p>Press <strong>OK/ENTER</strong> button on your remote to place blocks</p>
+                <p>⬆️ Stack blocks as high as you can!</p>
+                <p class="controls-info">
+                    <span>🎮 Controls: </span>
+                    <span>OK/ENTER = Place Block</span> | 
+                    <span>BACK = Exit</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>Tower Blocks • Jio STB 4K Edition • Android TV 9+ • Responsive 4K/1080p/720p</footer>
+    
+    <!-- STB Optimized Game Script -->
+    <script src="app.js"></script>
+    
+    <!-- Enhanced Multi-Input Controller Handler for Jio STB -->
+    <script>
+        console.log("=== Tower Blocks - Jio STB 4K Edition ===");
+        console.log("Platform: Android TV 9+ / Jio Set-Top Box");
+        console.log("Target Resolutions: 4K (3840x2160), Full HD (1920x1080), HD (1280x720)");
+        console.log("Graphics: OpenGL ES 2.0/3.0 Compatible");
+        
+        // Detect screen resolution and DPI
+        window.addEventListener('load', function() {
+            // Hide loading screen after game loads
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('loaded');
+                    console.log("✓ Loading screen hidden - Game ready");
+                }
+            }, 2000); // Hide after 2 seconds
+            
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+            const pixelRatio = window.devicePixelRatio || 1;
+            
+            console.log("Screen Resolution:", screenWidth + "x" + screenHeight);
+            console.log("Pixel Ratio (DPI):", pixelRatio);
+            console.log("Viewport:", window.innerWidth + "x" + window.innerHeight);
+            
+            // Log detected resolution tier
+            if (screenWidth >= 3840 && screenHeight >= 2160) {
+                console.log("✓ 4K Ultra HD Display Detected");
+            } else if (screenWidth >= 1920 && screenHeight >= 1080) {
+                console.log("✓ Full HD (1080p) Display Detected");
+            } else if (screenWidth >= 1280 && screenHeight >= 720) {
+                console.log("✓ HD (720p) Display Detected");
+            }
+            
+            console.log("JioGames STB SDK initialized");
+            
+            // === Multi-Input Support ===
+            
+            // 1. Jio Remote Control (D-Pad + OK + BACK)
+            // 2. Bluetooth Game Controllers (PS4/Xbox/Generic)
+            // 3. Smartphone as Controller
+            
+            var inputDevices = {
+                jioRemote: false,
+                gamepad: false,
+                smartphone: false
+            };
+            
+            // === Jio Remote / Keyboard Input ===
+            document.addEventListener('keydown', function(e) {
+                inputDevices.jioRemote = true;
+                
+                console.log("Input:", e.keyCode, "Key:", e.key);
+                
+                // OK/ENTER/SPACEBAR - Place Block (Primary Action)
+                if (e.keyCode === 13 || e.keyCode === 32 || e.keyCode === 23) {
+                    if (e.keyCode === 13 || e.keyCode === 23) {
+                        // Convert ENTER/OK to SPACEBAR for game logic
+                        const spaceEvent = new KeyboardEvent('keydown', {
+                            keyCode: 32,
+                            which: 32,
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        document.dispatchEvent(spaceEvent);
+                    }
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // BACK button (Android TV back = keyCode 8 or 27)
+                if (e.keyCode === 27 || e.keyCode === 8 || e.keyCode === 4) {
+                    console.log("BACK button - Exit game");
+                    // Show exit confirmation
+                    if (confirm("Exit Tower Blocks?")) {
+                        window.close();
+                    }
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // D-Pad navigation (for menu - currently not used in game)
+                if ([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                    e.preventDefault();
+                }
+            });
+            
+            // === Gamepad / Controller Support (PS4/Xbox/Generic Bluetooth) ===
+            var gamepadConnected = false;
+            var gamepadIndex = null;
+            
+            window.addEventListener("gamepadconnected", function(e) {
+                console.log("✓ Gamepad Connected:", e.gamepad.id);
+                console.log("  Buttons:", e.gamepad.buttons.length);
+                console.log("  Axes:", e.gamepad.axes.length);
+                
+                gamepadConnected = true;
+                gamepadIndex = e.gamepad.index;
+                inputDevices.gamepad = true;
+                
+                // Show gamepad indicator
+                console.log("🎮 Using: " + e.gamepad.id);
+                
+                startGamepadPolling();
+            });
+            
+            window.addEventListener("gamepaddisconnected", function(e) {
+                console.log("✗ Gamepad Disconnected:", e.gamepad.id);
+                gamepadConnected = false;
+                gamepadIndex = null;
+                inputDevices.gamepad = false;
+            });
+            
+            // Gamepad button polling
+            var lastButtonState = {};
+            
+            function startGamepadPolling() {
+                function pollGamepad() {
+                    if (!gamepadConnected) return;
+                    
+                    var gamepads = navigator.getGamepads();
+                    var gp = gamepads[gamepadIndex];
+                    
+                    if (gp) {
+                        // Button 0 = A (Xbox) / X (PS4) - Primary action
+                        // Button 1 = B (Xbox) / Circle (PS4) - Secondary
+                        // Button 9 = Start
+                        
+                        if (gp.buttons[0].pressed && !lastButtonState[0]) {
+                            // A/X button - Place block
+                            const spaceEvent = new KeyboardEvent('keydown', {
+                                keyCode: 32,
+                                which: 32,
+                                bubbles: true,
+                                cancelable: true
+                            });
+                            document.dispatchEvent(spaceEvent);
+                            console.log("🎮 Controller: A/X pressed");
+                        }
+                        
+                        if (gp.buttons[1].pressed && !lastButtonState[1]) {
+                            // B/Circle button - Back/Exit
+                            console.log("🎮 Controller: B/Circle pressed");
+                        }
+                        
+                        // Update button states
+                        for (var i = 0; i < gp.buttons.length; i++) {
+                            lastButtonState[i] = gp.buttons[i].pressed;
+                        }
+                    }
+                    
+                    requestAnimationFrame(pollGamepad);
+                }
+                
+                pollGamepad();
+            }
+            
+            // === Touch/Click Support (Smartphone as Controller) ===
+            var touchSupported = 'ontouchstart' in window;
+            
+            if (touchSupported) {
+                console.log("✓ Touch Input Detected (Smartphone)");
+                inputDevices.smartphone = true;
+            }
+            
+            // === Performance Monitoring (60 FPS Target) ===
+            var lastFrameTime = performance.now();
+            var frameCount = 0;
+            var fps = 60;
+            
+            function monitorPerformance() {
+                frameCount++;
+                var currentTime = performance.now();
+                var deltaTime = currentTime - lastFrameTime;
+                
+                if (deltaTime >= 1000) {
+                    fps = Math.round((frameCount * 1000) / deltaTime);
+                    console.log("Performance: " + fps + " FPS");
+                    
+                    if (fps < 55) {
+                        console.warn("⚠ Performance below 60 FPS target");
+                    }
+                    
+                    frameCount = 0;
+                    lastFrameTime = currentTime;
+                }
+                
+                requestAnimationFrame(monitorPerformance);
+            }
+            
+            // Start performance monitoring
+            setTimeout(monitorPerformance, 1000);
+            
+            // === Log Active Input Devices ===
+            setTimeout(function() {
+                console.log("=== Active Input Devices ===");
+                console.log("Jio Remote:", inputDevices.jioRemote ? "✓" : "✗");
+                console.log("Gamepad:", inputDevices.gamepad ? "✓" : "✗");
+                console.log("Touch/Smartphone:", inputDevices.smartphone ? "✓" : "✗");
+                console.log("===========================");
+            }, 2000);
+            
+            console.log("=== Controls Ready ===");
+            console.log("Remote: OK/ENTER = Place Block, BACK = Exit");
+            console.log("Controller: A/X = Place Block, B/Circle = Back");
+            console.log("Touch: Tap = Place Block");
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "name": "Tower Blocks",
+  "short_name": "TowerBlocks",
+  "package": "com.kaifoundry.towerblocksJP",
+  "description": "Stack blocks to build the tallest tower",
+  "launch_path": "/index.html",
+  "icons": {
+    "56": "/icons/icon-56.svg",
+    "112": "/icons/icon-112.svg"
+  },
+  "developer": {
+    "name": "Tower Blocks Dev",
+    "url": "https://example.com"
+  },
+  "type": "web",
+  "default_locale": "en-US",
+  "orientation": "portrait-primary",
+  "display": "fullscreen",
+  "permissions": {},
+  "cursor": {
+    "mode": "tab"
+  }
+}
+

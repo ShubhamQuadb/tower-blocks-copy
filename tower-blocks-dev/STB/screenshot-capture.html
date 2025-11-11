@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Blocks - STB Screenshot Capture Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        .instructions {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h2 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .size-selector {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .size-btn {
+            padding: 15px 30px;
+            background: #667eea;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .size-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .size-btn.active {
+            background: #FFD700;
+            color: #1a1a1a;
+        }
+
+        .game-frame {
+            margin: 20px auto;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+            position: relative;
+        }
+
+        .frame-info {
+            position: absolute;
+            top: -35px;
+            right: 0;
+            background: #FFD700;
+            color: #1a1a1a;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        iframe {
+            display: block;
+            border: none;
+        }
+
+        .capture-info {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .capture-info h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        .capture-info ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .requirements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .req-card {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .req-card h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .req-card ul {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+
+        .warning {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Tower Blocks - STB Marketing Assets Capture Tool</h1>
+        
+        <div class="instructions">
+            <h2>📋 JioGames STB Asset Requirements</h2>
+            <ul>
+                <li><strong>Screenshot Size:</strong> 1920 x 1080 pixels (Full HD)</li>
+                <li><strong>Format:</strong> JPG (HD Quality)</li>
+                <li><strong>File Size:</strong> Up to 2MB</li>
+                <li><strong>Quantity:</strong> Minimum 4, Maximum 8 screenshots</li>
+                <li><strong>Content:</strong> Best and most important features of the game</li>
+            </ul>
+        </div>
+
+        <h2 style="text-align: center; margin-bottom: 20px;">Select Preview Size:</h2>
+        <div class="size-selector">
+            <button class="size-btn active" onclick="setSize(1920, 1080, 'Full HD Screenshot')">
+                📸 1920x1080 (Screenshot)
+            </button>
+            <button class="size-btn" onclick="setSize(1280, 720, 'Icon Size 1')">
+                🖼️ 1280x720 (Icon 1)
+            </button>
+            <button class="size-btn" onclick="setSize(812, 1080, 'Icon Size 2')">
+                🖼️ 812x1080 (Icon 2)
+            </button>
+            <button class="size-btn" onclick="setSize(800, 800, 'Icon Size 3')">
+                🖼️ 800x800 (Icon 3)
+            </button>
+        </div>
+
+        <div class="game-frame" id="gameFrame">
+            <div class="frame-info" id="frameInfo">1920 x 1080 (Full HD Screenshot)</div>
+            <iframe id="gameIframe" src="index.html" width="1920" height="1080"></iframe>
+        </div>
+
+        <div class="capture-info">
+            <h3>📷 How to Capture Screenshots:</h3>
+            <ol>
+                <li><strong>Windows:</strong> Press <code>Win + Shift + S</code> to open Snipping Tool, then select the game frame area</li>
+                <li><strong>Alternative:</strong> Press <code>PrtScn</code> to capture full screen, then crop to the frame size</li>
+                <li><strong>Browser:</strong> Right-click on game frame → "Capture screenshot" (if available)</li>
+                <li><strong>Play the game</strong> and capture different gameplay moments:
+                    <ul style="margin-top: 10px;">
+                        <li>Game start screen</li>
+                        <li>Early gameplay (2-3 blocks)</li>
+                        <li>Mid gameplay (8-10 blocks with score visible)</li>
+                        <li>High score gameplay (20+ blocks)</li>
+                        <li>Game over screen with high score</li>
+                        <li>Different block colors/angles</li>
+                    </ul>
+                </li>
+                <li>Save screenshots as <strong>JPG format</strong> with high quality</li>
+                <li>Ensure file size is under 2MB</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            ⚠️ Important: Take screenshots during actual gameplay showing the best features!
+        </div>
+
+        <h2 style="margin-top: 40px; margin-bottom: 20px;">📦 Complete STB Asset Checklist:</h2>
+        <div class="requirements">
+            <div class="req-card">
+                <h3>1. Game Icons (12 total)</h3>
+                <ul>
+                    <li>4 options @ 1280x720px</li>
+                    <li>4 options @ 812x1080px</li>
+                    <li>4 options @ 800x800px</li>
+                    <li>✅ JPEG, Max 2MB</li>
+                    <li>✅ Game Title MUST be present</li>
+                </ul>
+            </div>
+
+            <div class="req-card">
+                <h3>2. Background Images (4 total)</h3>
+                <ul>
+                    <li>4 options @ 1920x1080px</li>
+                    <li>✅ JPG, No Transparency</li>
+                    <li>✅ WITHOUT Game Title</li>
+                    <li>✅ Character/blocks on RIGHT side</li>
+                    <li>✅ Dark background</li>
+                </ul>
+            </div>
+
+            <div class="req-card">
+                <h3>3. Cross Promo Images</h3>
+                <ul>
+                    <li>Size: 1920x1080px</li>
+                    <li>✅ JPG, No Transparency</li>
+                    <li>✅ Game title MUST be present</li>
+                    <li>✅ Main character/blocks visible</li>
+                </ul>
+            </div>
+
+            <div class="req-card">
+                <h3>4. In-Game Screenshots</h3>
+                <ul>
+                    <li>Minimum 4, Maximum 8</li>
+                    <li>Size: 1920x1080px</li>
+                    <li>✅ JPG, HD Quality</li>
+                    <li>✅ Up to 2MB each</li>
+                    <li>✅ Show best features</li>
+                </ul>
+            </div>
+
+            <div class="req-card">
+                <h3>5. Vector Images (Optional)</h3>
+                <ul>
+                    <li>PNG format</li>
+                    <li>✅ Transparent background</li>
+                    <li>Game title</li>
+                    <li>Game blocks/characters</li>
+                    <li>Unique objects</li>
+                </ul>
+            </div>
+
+            <div class="req-card">
+                <h3>6. Promo Video (Optional)</h3>
+                <ul>
+                    <li>Aspect ratio: 16:9</li>
+                    <li>Size: 1920x1080px</li>
+                    <li>✅ MP4 format</li>
+                    <li>✅ Max 100MB</li>
+                    <li>✅ Gameplay without text</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setSize(width, height, label) {
+            const iframe = document.getElementById('gameIframe');
+            const frameInfo = document.getElementById('frameInfo');
+            const gameFrame = document.getElementById('gameFrame');
+            
+            iframe.width = width;
+            iframe.height = height;
+            frameInfo.textContent = `${width} x ${height} (${label})`;
+            
+            // Update active button
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Center the frame if it's smaller
+            if (width < 1920) {
+                gameFrame.style.width = width + 'px';
+                gameFrame.style.margin = '20px auto';
+            } else {
+                gameFrame.style.width = '100%';
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
