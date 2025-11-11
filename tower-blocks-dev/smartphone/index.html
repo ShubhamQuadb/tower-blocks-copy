@@ -597,6 +597,7 @@
         let gameStarted = false;
         let orientationChangeTimeout;
         let hasReloaded = false;
+        let isFullscreenActive = false; // Track fullscreen state
         
         // Check if we've already reloaded in this session
         if (sessionStorage.getItem('towerBlocksReloaded') === 'true') {
@@ -1043,8 +1044,19 @@
 </div>
 <footer>Tower Blocks 2025</footer>
 <script>
+// Flag to prevent multiple exitToMainMenu calls
+var isExitingToMainMenu = false;
+
 function exitToMainMenu() {
+    // Prevent multiple calls
+    if (isExitingToMainMenu) {
+        console.warn("Tower Blocks: exitToMainMenu already in progress, skipping duplicate call");
+        return;
+    }
+    
+    isExitingToMainMenu = true;
     console.log("Tower Blocks: Exit button clicked");
+    
     try {
         if (typeof window.tbHideHelp === 'function') {
             window.tbHideHelp();
@@ -1071,6 +1083,11 @@ function exitToMainMenu() {
     try {
         showAd();
     } catch (e) { console.log(e); }
+    
+    // Reset flag after a short delay to allow the function to complete
+    setTimeout(function() {
+        isExitingToMainMenu = false;
+    }, 1000);
 }
 
 // Global variable to track game state (already declared above)

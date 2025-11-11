@@ -395,38 +395,25 @@ var Game = /** @class */ (function () {
             console.log("Tower Blocks: Failed to post score", e);
         }
         
-        // Show ad at game over - rewarded if ready, else interstitial, else skip
+        // Show rewarded ad on game over - always call showAdRewarded() (wrapper will handle if ready or not)
         if (!this._rewardedAdShown) {
             this._rewardedAdShown = true;
-            var _this = this; // Store reference for setTimeout
             try {
-                // Check if ads are ready
-                var isRewardedReady = (typeof window !== 'undefined' && window.isRVReady === true);
-                var isInterstitialReady = (typeof window !== 'undefined' && window.isAdReady === true);
-                
-                if (isRewardedReady) {
-                    // Show rewarded ad if ready - Direct call
-                    if (typeof showAdRewarded === 'function') {
-                        console.log("Tower Blocks: Showing rewarded ad on game over (ad ready)");
-                        showAdRewarded();
-                    } else {
-                        console.log("Tower Blocks: showAdRewarded function not available");
-                    }
-                } else if (isInterstitialReady) {
-                    // Show interstitial if rewarded ad not ready but interstitial is ready - Direct call
-                    if (typeof showAd === 'function') {
-                        console.log("Tower Blocks: Showing interstitial on game over (rewarded ad not ready, but interstitial ready)");
-                        // Mark interstitial as shown to prevent duplicate calls
-                        _this._interstitialShown = true;
-                        // Direct call to Jio wrapper
-                        showAd();
-                    } else {
-                        console.log("Tower Blocks: showAd function not available");
-                    }
+                // Always call showAdRewarded() on game over - wrapper checks if ready internally
+                if (typeof showAdRewarded === 'function') {
+                    console.log("Tower Blocks: Calling showAdRewarded() on game over");
+                    showAdRewarded();
                 } else {
-                    // Both ads not ready - skip showing ads
-                    console.log("Tower Blocks: Both rewarded and interstitial ads not ready - skipping ad display on game over");
-                    console.log("Tower Blocks: isRVReady =", isRewardedReady, ", isAdReady =", isInterstitialReady);
+                    console.log("Tower Blocks: showAdRewarded function not available");
+                    // Fallback to interstitial if rewarded function not available
+                    if (typeof showAd === 'function') {
+                        var isInterstitialReady = (typeof window !== 'undefined' && window.isAdReady === true);
+                        if (isInterstitialReady) {
+                            console.log("Tower Blocks: Fallback - Showing interstitial on game over");
+                            this._interstitialShown = true;
+                            showAd();
+                        }
+                    }
                 }
             } catch (e) {
                 console.log("Tower Blocks: Failed to show ad on game over", e);
